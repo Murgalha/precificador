@@ -1,0 +1,38 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    bigdecimal (3.1.9)
+    filewatcher (2.1.0)
+      module_methods (~> 0.1.0)
+    mini_portile2 (2.8.8)
+    module_methods (0.1.0)
+    nio4r (2.7.4)
+    puma (6.5.0)
+      nio4r (~> 2.0)
+    rack (3.1.8)
+    rackup (2.2.1)
+      rack (>= 3)
+    rake (13.2.1)
+    roda (3.87.0)
+      rack
+    sequel (5.88.0)
+      bigdecimal
+    sqlite3 (2.5.0)
+      mini_portile2 (~> 2.8.0)
+    sqlite3 (2.5.0-x86_64-linux-gnu)
+
+PLATFORMS
+  ruby
+  x86_64-linux
+
+DEPENDENCIES
+  filewatcher (~> 2.1)
+  puma (~> 6.5)
+  rackup (~> 2.2)
+  rake (~> 13.2)
+  roda (~> 3.87)
+  sequel (~> 5.88)
+  sqlite3 (~> 2.5)
+
+BUNDLED WITH
+   2.6.2
