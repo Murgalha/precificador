@@ -1,0 +1,57 @@
+<div class="d-flex align-items-center mb-4">
+  <h2 class="me-4">Jornada de trabalho</h2>
+  <a class="btn btn-primary" href="/jornada/editar" role="button">Editar</a>
+</div>
+
+<table class="table table-sm">
+  <thead class="table-active">
+    <tr>
+      <td><strong>Salário</strong></td>
+      <td><strong>R$<%= money_format.call salary_info.salary.value %></strong></td>
+    </tr>
+    <tr>
+      <td><strong>Dia da semana</strong></td>
+      <td><strong>Tempo trabalhado (minutos)</strong></td>
+    </tr>
+  </thead>
+  <tbody>
+    <% for day in salary_info.work_week.days %>
+      <tr>
+        <td><%= get_translation day.name %></td>
+        <td><%= day.work_time %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<div class="d-flex align-items-center my-4">
+  <h2 class="me-4">Custos fixos</h2>
+  <a class="btn btn-primary" href="/custos/adicionar" role="button">Adicionar</a>
+</div>
+
+<% if costs.size > 0 %>
+  <table class="table table-sm">
+    <thead>
+      <tr class="table-active">
+        <td><strong>Nome</strong></td>
+        <td><strong>Valor</strong></td>
+      </tr>
+    </thead>
+    <tbody>
+      <% for cost in costs %>
+        <tr>
+          <td><%= cost.name %></td>
+          <td>R$<%= money_format.call(cost.value) %></td>
+        </tr>
+      <% end %>
+    </tbody>
+    <tfoot>
+      <tr class="table-active">
+        <td><strong>Total mensal</strong></td>
+        <td><strong>R$<%= money_format.call costs.map{|x| x.value}.sum %></strong></td>
+      </tr>
+    </tfoot>
+  </table>
+<% else %>
+  <p>Você não possui nenhum custo fixo adicionado.</p>
+<% end %>

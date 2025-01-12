@@ -1,0 +1,100 @@
+<h1>Editar jornada</h1>
+<form action="/jornada/editar" method="post">
+  <fieldset>
+    <div class="mb-3">
+      <label for="salary" class="form-label">Salário</label>
+      <input id="salary" type="text" name="salary" class="form-control" value="<%= salary.value %>" />
+    </div>
+    <div>
+      <label for="sunday" class="form-label"><%= days[0].name %></label>
+      <div class="input-group mb-3">
+        <input type="number"
+               step="any"
+               name="sunday"
+               id="sunday"
+               class="form-control"
+               value="<%= days[0].work_time %>">
+        <span class="input-group-text">minutos</span>
+      </div>
+    </div>
+
+    <div>
+      <label for="monday" class="form-label"><%= days[1].name %></label>
+      <div class="input-group mb-3">
+        <input type="number"
+               step="any"
+               name="monday"
+               id="monday"
+               class="form-control"
+               value="<%=days[1].work_time%>">
+        <span class="input-group-text">minutos</span>
+      </div>
+    </div>
+
+    <div>
+      <label for="tuesday" class="form-label"><%= days[2].name %></label>
+      <div class="input-group mb-3">
+        <input type="number"
+               step="any"
+               name="tuesday"
+               id="tuesday"
+               class="form-control"
+               value="<%=days[2].work_time%>">
+        <span class="input-group-text">minutos</span>
+      </div>
+    </div>
+
+    <div>
+      <label for="wednesday" class="form-label"><%= days[3].name %></label>
+      <div class="input-group mb-3">
+        <input type="number"
+               step="any"
+               name="wednesday"
+               id="wednesday"
+               class="form-control"
+               value="<%=days[3].work_time%>">
+        <span class="input-group-text">minutos</span>
+      </div>
+    </div>
+
+    <div>
+      <label for="thursday" class="form-label"><%= days[4].name %></label>
+      <div class="input-group mb-3">
+        <input type="number"
+               step="any"
+               name="thursday"
+               id="thursday"
+               class="form-control"
+               value="<%=days[4].work_time%>">
+        <span class="input-group-text">minutos</span>
+      </div>
+    </div>
+
+    <div>
+      <label for="friday" class="form-label"><%= days[5].name %></label>
+      <div class="input-group mb-3">
+        <input type="number"
+               step="any"
+               name="friday"
+               id="friday"
+               class="form-control"
+               value="<%=days[5].work_time%>">
+        <span class="input-group-text">minutos</span>
+      </div>
+    </div>
+
+    <div>
+      <label for="saturday" class="form-label"><%= days[6].name %></label>
+      <div class="input-group mb-3">
+        <input type="number"
+               step="any"
+               name="saturday"
+               id="saturday"
+               class="form-control"
+               value="<%=days[6].work_time%>">
+        <span class="input-group-text">minutos</span>
+      </div>
+    </div>
+  </fieldset>
+  <button type="submit" class="btn btn-primary">Salvar</button>
+</form>
