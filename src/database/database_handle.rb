@@ -1,10 +1,17 @@
 require 'sequel'
 require_relative 'models'
 
+Sequel.extension :migration
+
 class DatabaseHandle
   def initialize(connection_string)
     @connection_string = connection_string
     @db = Sequel.sqlite(@connection_string)
+    @migrations_path = File.join(['src', 'database', 'migrations'])
+
+    if !Sequel::Migrator.is_current? @db, @migrations_path
+      Sequel::Migrator.run(@db, @migrations_path, :use_transactions => true)
+    end
   end
 
   def add_cost(name, value)
