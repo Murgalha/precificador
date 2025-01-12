@@ -20,6 +20,7 @@ GEM
     sqlite3 (2.5.0)
       mini_portile2 (~> 2.8.0)
     sqlite3 (2.5.0-x86_64-linux-gnu)
+    tilt (2.5.0)
 
 PLATFORMS
   ruby
@@ -33,6 +34,7 @@ DEPENDENCIES
   roda (~> 3.87)
   sequel (~> 5.88)
   sqlite3 (~> 2.5)
+  tilt (~> 2.5)
 
 BUNDLED WITH
    2.6.2

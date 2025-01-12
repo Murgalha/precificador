@@ -8,3 +8,5 @@ gem "sequel", "~> 5.88"
 gem "sqlite3", "~> 2.5"
 
 gem "filewatcher", "~> 2.1", :group => :development
+
+gem "tilt", "~> 2.5"

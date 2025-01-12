@@ -44,10 +44,12 @@ def get_measure_type_t(measure_type)
 end
 
 class Server < Roda
+  plugin :assets, css: 'styles.css'
 
   route do |r|
     @db_handle = DatabaseHandle.new('./db.sqlite3')
 
+    r.assets
     r.root do
       r.redirect "/produtos"
     end
