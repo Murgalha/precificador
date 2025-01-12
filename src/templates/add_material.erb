@@ -1,0 +1,63 @@
+<h1>Adicionar material</h1>
+<form action="/materiais/adicionar" method="post">
+  <fieldset>
+    <div class="mb-4 form-floating">
+      <input id="name" type="text" name="name" class="form-control" />
+      <label for="name" class="form-label">Nome do material</label>
+    </div>
+
+    <div class="form-floating mb-4">
+      <textarea class="form-control" id="note" style="height: 100px" name="note" value="">
+      </textarea>
+      <label for="note">Observações (opcional)</label>
+    </div>
+
+    <div class="form-floating">
+      <select class="form-select" name="type" id="type">
+        <% measure_types.each_with_index do |type, index| %>
+          <% puts "type: #{type.name}" %>
+            <% if index == 0 %>
+            <option value="<%= type.value %>" selected>
+              <%= get_translation type %>
+            </option>
+          <% else %>
+            <option value="<%= type.value %>">
+              <%= get_translation type %>
+            </option>
+          <% end %>
+        <% end %>
+      </select>
+      <label for="type">Tipo de medida</label>
+    </div>
+
+    <div id="base-area" style="visibility: hidden;" class="my-4">
+      <label for="base-width" class="form-label">Largura base (cm)</label>
+      <input id="base-width" type="text" name="base-width" class="form-control" />
+
+      <label for="base-length" class="form-label">Comprimento base (cm)</label>
+      <input id="base-length" type="text" name="base-length" class="form-control" />
+    </div>
+
+    <div class="form-floating mb-4">
+      <input id="price" class="form-control" type="number" name="price" step="any" />
+      <label for="price">Preço</label>
+    </div>
+  </fieldset>
+  <button type="submit" class="btn btn-primary">Adicionar</button>
+</form>
+<script>
+ (function(w, d){
+   d.querySelector("select[id='type']").addEventListener('change', function(e){
+     var option = this.options[this.selectedIndex].value;
+
+     if(option == "<%= MaterialMeasureType.area.value %>") {
+       div = document.querySelector("#base-area");
+       div.style['visibility'] = 'visible'
+     }
+     else {
+       div = document.querySelector("#base-area");
+       div.style['visibility'] = 'hidden'
+     }
+   });
+ })(window, document);
+</script>

@@ -17,7 +17,7 @@
   <tbody>
     <% for day in salary_info.work_week.days %>
       <tr>
-        <td><%= get_translation day.name %></td>
+        <td><%= get_translation day %></td>
         <td><%= day.work_time %></td>
       </tr>
     <% end %>

@@ -44,15 +44,15 @@ class DatabaseHandle
             .single_record!
 
     salary = Salary.new(row[:salary])
-    week_hash = {
-      :sunday => row[:sunday],
-      :monday => row[:monday],
-      :tuesday => row[:tuesday],
-      :wednesday => row[:wednesday],
-      :thursday => row[:thursday],
-      :friday => row[:friday],
-      :saturday => row[:saturday],
-    }
+    week_hash = [
+      WorkDay.sunday(row[:sunday]),
+      WorkDay.monday(row[:monday]),
+      WorkDay.tuesday(row[:tuesday]),
+      WorkDay.wednesday(row[:wednesday]),
+      WorkDay.thursday(row[:thursday]),
+      WorkDay.friday(row[:friday]),
+      WorkDay.saturday(row[:saturday]),
+    ]
 
     return SalaryInfo.new(salary, WorkWeek.new(week_hash))
   end
@@ -62,5 +62,46 @@ class DatabaseHandle
     values[:salary] = new_salary
 
     @db[:salary_info].update(values)
+  end
+
+  def get_materials
+    columns = [
+      :name,
+      :note,
+      :measure_type,
+      :price,
+      :base_width,
+      :base_length
+    ]
+    results = []
+    @db[:material].select(*columns).all do |row|
+      id = row[:id]
+      name = row[:name]
+      note = row[:note]
+      mt = MaterialMeasureType.from_value(row[:measure_type])
+      price = row[:price]
+      bw = if mt == MaterialMeasureType.area then row[:base_width] else nil end
+      bl = if mt == MaterialMeasureType.area then row[:base_length] else nil end
+
+      results.append(Material.new(id, name, note, mt, price, bw, bl))
+    end
+
+    return results
+  end
+
+  def add_material(name, note, type, price, bw, bl)
+    base_width = if type == MaterialMeasureType.area.value then bw else nil end
+    base_length = if type == MaterialMeasureType.area.value then bl else nil end
+
+    values = {
+      :name => name,
+      :note => note,
+      :measure_type => type,
+      :price => price,
+      :base_width => base_width,
+      :base_length => base_length,
+    }
+
+    @db[:material].insert(values)
   end
 end

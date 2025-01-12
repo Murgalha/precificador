@@ -1,0 +1,34 @@
+<div class="d-flex align-items-center mb-4">
+  <h1 class="me-4">Materiais</h1>
+  <a class="btn btn-primary" href="/materiais/adicionar" role="button">Adicionar</a>
+</div>
+
+<table class="table table-sm">
+  <thead>
+    <tr class="table-active">
+      <td><strong>Nome</strong></td>
+      <td><strong>Preço base</strong></td>
+    </tr>
+  </thead>
+  <tbody>
+    <% for material in materials %>
+      <tr>
+        <td><%= material.name %></td>
+
+        <% if material.measure_type == MaterialMeasureType.area %>
+          <td>
+            R$<%= money_format material.price %> (<%=material.base_length%>x<%=material.base_width%>cm)
+          </td>
+        <% elsif material.measure_type == MaterialMeasureType.length %>
+          <td>
+            R$<%= money_format material.price %> / metro
+          </td>
+        <% else %>
+          <td>
+            R$<%= money_format material.price %> (unidade)
+          </td>
+        <% end %>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

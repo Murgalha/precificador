@@ -6,7 +6,19 @@ def money_format(number)
   return format("%.2f", number)
 end
 
-def get_translation(week_day_symbol)
+def get_translation(object)
+  if object.is_a? WorkDay
+    return get_work_day_t object
+  elsif object.is_a? MaterialMeasureType
+    return get_measure_type_t object
+  else
+    raise "Invalid type for translation #{object.class}"
+  end
+
+  return ''
+end
+
+def get_work_day_t(work_day)
   translation_hash = {
     :sunday => "Domingo",
     :monday => "Segunda-feira",
@@ -17,7 +29,18 @@ def get_translation(week_day_symbol)
     :saturday => "Sábado",
   }
 
-  return translation_hash.fetch(week_day_symbol, '')
+  return translation_hash.fetch(work_day.name, '')
+end
+
+def get_measure_type_t(measure_type)
+    translation_hash = {
+      MaterialMeasureType.unit.value => "Unidade",
+      MaterialMeasureType.length.value => "Comprimento",
+      MaterialMeasureType.area.value => "Área",
+      MaterialMeasureType.weight.value => "Peso",
+    }
+
+    return translation_hash.fetch(measure_type.value, '')
 end
 
 class Server < Roda
@@ -86,6 +109,45 @@ class Server < Roda
 
           @db_handle.update_salary_info(request.POST['salary'].to_f, data)
           r.redirect "/custos"
+        end
+      end
+    end
+
+    # /materiais
+    r.on "materiais" do
+      r.is do
+        materials = @db_handle.get_materials
+
+        context = { :materials => materials }
+
+        render_page(Templates.materials, "Materiais", context)
+      end
+
+      r.on "adicionar" do
+        r.get do
+          measure_types = [
+            MaterialMeasureType.unit,
+            MaterialMeasureType.length,
+            MaterialMeasureType.area,
+            MaterialMeasureType.weight,
+          ]
+
+          context = { :measure_types => measure_types }
+
+          render_page(Templates.add_material, "Adicionar material", context)
+        end
+
+        r.post do
+          name = request.POST['name'].strip
+          note = request.POST['note'].strip
+          type = request.POST['type'].to_i
+          price = request.POST['price'].to_f
+          bw = request.POST['base-width'].to_i
+          bl = request.POST['base-length'].to_i
+
+          @db_handle.add_material(name, note, type, price, bw, bl)
+
+          r.redirect "/materiais"
         end
       end
     end
