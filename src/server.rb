@@ -1,4 +1,5 @@
 require "roda"
+require_relative 'templates'
 require_relative 'database/database_handle'
 
 def money_format(number)
@@ -28,6 +29,7 @@ class Server < Roda
       r.redirect "/produtos"
     end
 
+    # /custos
     r.on "custos" do
       r.is do
         costs = @db_handle.get_costs()
@@ -38,12 +40,12 @@ class Server < Roda
           :salary_info => salary_info
         }
 
-        render_page('costs', 'Custos', context)
+        render_page(Templates.costs, 'Custos', context)
       end
 
       r.on "adicionar" do
         r.get do
-          render_page('add_cost', 'Adicionar custo')
+          render_page(Templates.add_cost, 'Adicionar custo')
         end
 
         r.post do
@@ -58,6 +60,7 @@ class Server < Roda
       end
     end
 
+    # /jornada
     r.on "jornada" do
       r.on "editar" do
         r.get do
@@ -67,7 +70,7 @@ class Server < Roda
             :days => salary_info.work_week.days,
           }
 
-          render_page('edit_salary_info', 'Editar jornada de trabalho', context)
+          render_page(Templates.edit_salary_info, 'Editar jornada de trabalho', context)
         end
 
         r.post do
@@ -108,5 +111,5 @@ def render_page(template_name, title, context={})
   template = ERB.new(File.read(File.join(template_path, filename)))
 
   content = template.result_with_hash(context)
-  base_template.result_with_hash({:content => content, :title => title})
+  base_template.result_with_hash({:content => content, :title => "#{title} | Precificador"})
 end
