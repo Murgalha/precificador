@@ -39,7 +39,6 @@
    },
    <% end %>
  ]
- let materialCount = 0;
 
  function removeMaterial(event) {
    event.preventDefault();
@@ -47,7 +46,6 @@
    let selector = parentDiv.getElementsByClassName('material-selector')[0];
 
    parentDiv.remove();
-   materialCount--;
  }
 
  function updateDropdown(event) {
@@ -72,7 +70,7 @@
    event.target.setAttribute("oldValue", event.target.value);
  }
 
- function createInputs(measure_type, index) {
+ function createInputs(measure_type) {
    if(measure_type === <%= MaterialMeasureType.area.value %>) {
      let width_input = document.createElement('input');
      width_input.setAttribute('type', 'number');
@@ -139,7 +137,7 @@
        select.appendChild(option);
      });
      let material = all_materials[0];
-     let inputs = createInputs(material.measure_type, materialCount);
+     let inputs = createInputs(material.measure_type);
 
      let button = document.createElement('button');
      button.setAttribute('class', 'remove-material-button btn btn-outline-danger btn-sm')
@@ -151,7 +149,6 @@
      new_div.appendChild(button);
 
      div.appendChild(new_div);
-     materialCount++;
    });
  })(window, document);
 </script>
