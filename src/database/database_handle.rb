@@ -104,4 +104,103 @@ class DatabaseHandle
 
     @db[:material].insert(values)
   end
+
+  def get_products_summary
+    results = []
+    @db[:product].select(:id, :name, :description).all do |row|
+      id = row[:id]
+      name = row[:name]
+      description = row[:description]
+
+      results.append(ProductSummary.new(id, name, description))
+    end
+
+    return results
+  end
+
+  def get_product(product_id)
+    product_result = @db[:product].select(:name, :description, :minutes_needed, :profit)
+      .where(:id => product_id)
+      .single_record!
+
+    material_cols = [
+      Sequel.qualify(:material, :name),
+      Sequel.qualify(:material, :price),
+      Sequel.qualify(:material, :measure_type),
+      Sequel.qualify(:material, :base_width),
+      Sequel.qualify(:material, :base_length),
+      Sequel.qualify(:product_materials, :id).as(:product_material_id),
+    ]
+    product_id_col = Sequel.qualify(:product, :id)
+    pm_product_id_col = Sequel.qualify(:product_materials, :product_id)
+    pm_material_id_col = Sequel.qualify(:product_materials, :material_id)
+    material_id_col = Sequel.qualify(:material, :id)
+
+    query = @db[:product]
+              .join_table(:left, :product_materials, product_id_col => pm_product_id_col)
+              .join_table(:left, :material, pm_material_id_col => material_id_col)
+              .select(*material_cols)
+              .where(:product_id => product_id)
+
+    product_materials = []
+    query.each do |row|
+      pm_id = row[:product_material_id]
+      quantities = @db[:product_material_quantities].select(:quantity).where(:product_material_id => pm_id).all
+
+      if row[:measure_type] == MaterialMeasureType.area.value
+        product_materials.append(AreaProductMaterial.new(row[:name], row[:price], row[:base_length], row[:base_length], quantities[0][:quantity], quantities[1][:quantity]))
+
+      elsif row[:measure_type] == MaterialMeasureType.length.value
+        product_materials.append(LengthProductMaterial.new(row[:name], row[:price], quantities[0][:quantity]))
+      else
+        product_materials.append(UnitProductMaterial.new(row[:name], row[:price], quantities[0][:quantity]))
+      end
+    end
+
+    Product.new(product_result[:name], product_result[:description], product_result[:minutes_needed], product_result[:profit], product_materials)
+  end
+
+  def add_product(data)
+    values = {
+      :name => data[:name],
+      :description => data[:description],
+      :minutes_needed => data[:work_time],
+      :profit => data[:profit],
+    }
+
+    product_id = @db[:product].insert(values)
+
+    for material in data[:materials]
+      name = material[0]
+      quantity = material[1]
+
+      record = @db[:material].select(:id, :measure_type).where(:name => name).single_record!
+
+      material_id = record[:id]
+      material_type = record[:measure_type]
+
+      quantities = []
+      if material_type == MaterialMeasureType.area.value
+        split = quantity.split('x')
+        quantities.append(split[0])
+        quantities.append(split[0])
+      else
+        quantities.append(quantity)
+      end
+
+      values = {
+        :product_id => product_id,
+        :material_id => material_id,
+      }
+      inserted_id = @db[:product_materials].insert(values)
+
+      for q in quantities
+        values = {
+          :product_material_id => inserted_id,
+          :quantity => q,
+        }
+        @db[:product_material_quantities].insert(values)
+      end
+    end
+  end
 end

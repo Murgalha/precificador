@@ -1,4 +1,5 @@
-require "roda"
+require 'uri'
+require 'roda'
 require_relative 'templates'
 require_relative 'database/database_handle'
 
@@ -33,14 +34,14 @@ def get_work_day_t(work_day)
 end
 
 def get_measure_type_t(measure_type)
-    translation_hash = {
-      MaterialMeasureType.unit.value => "Unidade",
-      MaterialMeasureType.length.value => "Comprimento",
-      MaterialMeasureType.area.value => "Área",
-      MaterialMeasureType.weight.value => "Peso",
-    }
+  translation_hash = {
+    MaterialMeasureType.unit.value => "Unidade",
+    MaterialMeasureType.length.value => "Comprimento",
+    MaterialMeasureType.area.value => "Área",
+    MaterialMeasureType.weight.value => "Peso",
+  }
 
-    return translation_hash.fetch(measure_type.value, '')
+  return translation_hash.fetch(measure_type.value, '')
 end
 
 class Server < Roda
@@ -153,6 +154,47 @@ class Server < Roda
         end
       end
     end
+
+    r.on "produtos" do
+      r.is do
+        products = @db_handle.get_products_summary
+        context = { :products => products }
+
+        render_page(Templates.products, 'Produtos', context)
+      end
+
+      r.is Integer do |product_id|
+        product = @db_handle.get_product(product_id)
+        salary_info = @db_handle.get_salary_info
+
+        context = {:product => product, :salary_info => salary_info}
+        render_page(Templates.product_details, product.name, context)
+      end
+
+      r.on "adicionar" do
+        r.get do
+          materials = @db_handle.get_materials
+          context = { :materials => materials }
+
+          render_page(Templates.add_product, 'Adicionar produto', context)
+        end
+
+        r.post do
+          params = parse_body_with_list_param(request.body)
+
+          data = {
+            :name => params['name'].first.strip,
+            :description => params['description'].first.strip,
+            :work_time => params['work-time'].first.to_i,
+            :profit => params['profit'].first.to_i,
+            :materials => params['material-name'].zip(params['material-quantity']),
+          }
+
+          @db_handle.add_product(data)
+          r.redirect "/produtos"
+        end
+      end
+    end
   end
 end
 
@@ -176,4 +218,23 @@ def render_page(template_name, title, context={})
 
   content = template.result_with_hash(context)
   base_template.result_with_hash({:content => content, :title => "#{title} | Precificador"})
+end
+
+def parse_body_with_list_param(body)
+  body_str = URI.decode_www_form_component(body.read)
+  params = {}
+
+  body_str.split('&').each do |param|
+    split = param.split('=')
+    name = split[0]
+    value = split[1]
+
+    if !params.has_key? name
+      params[name] = []
+    end
+
+    params[name].append(value)
+  end
+
+  return params
 end

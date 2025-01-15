@@ -18,4 +18,16 @@ class Templates
   def self.add_material
     'add_material.erb'
   end
+
+  def self.products
+    'products.erb'
+  end
+
+  def self.add_product
+    'add_product.erb'
+  end
+
+  def self.product_details
+    'product_details.erb'
+  end
 end

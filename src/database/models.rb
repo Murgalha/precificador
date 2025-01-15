@@ -94,12 +94,10 @@ class WorkDay
   end
 
   def ==(other)
-    puts "Comparison: #{other.name.eql? @name}"
     return other.name == @name
   end
 
   def eql?(other)
-    puts "Comparison 2: #{other.name.eql? @name}"
     return other.name.eql? @name
   end
 
@@ -169,5 +167,123 @@ class MaterialMeasureType
   def initialize(name, value)
     @name = name
     @value = value
+  end
+end
+
+class ProductSummary
+  attr_reader :id, :name, :description
+
+  def initialize(id, name, description)
+    @id = id
+    @name = name
+    @description = description
+  end
+end
+
+class ProductMaterial
+  attr_reader :name, :price
+
+  def initialize(name, price)
+    @name = name
+    @price = price
+  end
+
+  def get_cost; raise "Method not implemented"; end
+end
+
+class AreaProductMaterial < ProductMaterial
+  attr_reader :width, :length, :base_width, :base_length
+
+  def initialize(name, price, bw, bl, w, l)
+    super(name, price)
+
+    @base_width = bw
+    @base_length = bl
+    @width = w
+    @length = l
+  end
+
+  def get_cost
+    area = @width * @length
+    unit_cost = @price / (@base_length * @base_width)
+
+    return area * unit_cost
+  end
+end
+
+class UnitProductMaterial < ProductMaterial
+  attr_reader :quantity
+
+  def initialize(name, price, quantity)
+    super(name, price)
+    @quantity = quantity
+  end
+
+  def get_cost
+    return @price * @quantity
+  end
+end
+
+class LengthProductMaterial < ProductMaterial
+  attr_reader :quantity
+
+  def initialize(name, price, quantity)
+    super(name, price)
+    @quantity = quantity
+  end
+
+  def get_cost
+    return @price * (@quantity / 100)
+  end
+end
+
+class Product
+  attr_reader :name, :description, :minutes_needed, :profit, :materials
+
+  def initialize(name, description, minutes_needed, profit, materials)
+    @name = name
+    @description = description
+    @minutes_needed = minutes_needed
+    @profit = profit
+    @materials = materials
+  end
+
+  def get_final_price(salary_info)
+    material_cost = get_material_cost()
+    labor_cost = get_labor_cost(salary_info)
+
+    return labor_cost + material_cost + get_profit_wage(salary_info)
+  end
+
+  def get_material_cost
+    material_sum = 0
+    for m in @materials
+      material_sum += m.get_cost
+    end
+    return material_sum
+  end
+
+  def get_labor_cost(salary_info)
+    wage = 0
+    worked_minutes = 0
+
+    for day in salary_info.work_week.days
+      worked_minutes += day.work_time
+    end
+    worked_minutes *= 4
+
+    if worked_minutes != 0
+      wage_per_minute = salary_info.salary.value / worked_minutes
+      wage = wage_per_minute * @minutes_needed
+    end
+
+    return wage
+  end
+
+  def get_profit_wage(salary_info)
+    material_cost = get_material_cost
+    labor_cost = get_labor_cost(salary_info)
+
+    return (material_cost + labor_cost) * (@profit / 100)
   end
 end
