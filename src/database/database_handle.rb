@@ -41,6 +41,10 @@ class DatabaseHandle
     @db[:monthly_cost].where(:id => data[:id]).update(values)
   end
 
+  def remove_cost(cost_id)
+    @db[:monthly_cost].where(:id => cost_id).delete
+  end
+
   def get_salary_info()
     columns = [
       :salary,

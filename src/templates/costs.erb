@@ -41,7 +41,14 @@
       <% for cost in costs %>
         <tr>
           <td>
-            <a href="/custos/<%= cost.id %>/editar" class="btn btn-sm btn-info mr-2" role="button">
+            <button type="button"
+                    onclick="confirmRemoval(<%= cost.id %>)"
+                    class="btn btn-outline-danger btn-sm"
+                    data-bs-toggle="modal"
+                    data-bs-target="#staticBackdrop">
+              <i class="bi bi-trash"></i>
+            </button>
+            <a href="/custos/<%= cost.id %>/editar" class="btn btn-sm btn-outline-primary mr-2" role="button">
               <i class="bi bi-pencil-square"></i>
             </a>
             <%= cost.name %>
@@ -60,3 +67,22 @@
 <% else %>
   <p>Você não possui nenhum custo fixo adicionado.</p>
 <% end %>
+
+<script>
+ let all_costs = [
+   <% costs.each do |cost| %>
+   { name: "<%= cost.name %>",
+     id: <%= cost.id %>,
+   },
+   <% end %>
+ ]
+
+ function confirmRemoval(id) {
+   let cost = all_costs.find((x) => x.id === id);
+   openModal(`Remover ${cost.name}?`, `Esta ação não poderá ser desfeita.`, async () => { await removeCost(cost) });
+ }
+
+ async function removeCost(cost) {
+   await fetch(`/custos/${cost.id}/remover`, { method: "POST" });
+ }
+</script>

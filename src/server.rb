@@ -45,7 +45,7 @@ def get_measure_type_t(measure_type)
 end
 
 class Server < Roda
-  plugin :assets, css: 'styles.css'
+  plugin :assets, css: 'styles.css', js: 'utils.js'
 
   route do |r|
     @db_handle = DatabaseHandle.new('./db.sqlite3')
@@ -85,24 +85,33 @@ class Server < Roda
         end
       end
 
-      r.on Integer, "editar" do |cost_id|
-        r.get do
-          cost = @db_handle.get_cost cost_id
-          context = { :cost => cost }
+      r.on Integer do |cost_id|
+        r.on "editar" do
+          r.get do
+            cost = @db_handle.get_cost cost_id
+            context = { :cost => cost }
 
-          render_page(Templates.edit_cost, "Editar #{cost.name}", context)
+            render_page(Templates.edit_cost, "Editar #{cost.name}", context)
+          end
+
+          r.post do
+            data = {
+              :id => cost_id,
+              :name => request.POST['name'].strip,
+              :value => request.POST['value'].to_f
+            }
+
+            @db_handle.update_cost data
+
+            r.redirect "/custos"
+          end
         end
 
-        r.post do
-          data = {
-            :id => cost_id,
-            :name => request.POST['name'].strip,
-            :value => request.POST['value'].to_f
-          }
-
-          @db_handle.update_cost data
-
-          r.redirect "/custos"
+        r.on "remover" do
+          r.post do
+            @db_handle.remove_cost cost_id
+            "Custo removido com sucesso"
+          end
         end
       end
     end
