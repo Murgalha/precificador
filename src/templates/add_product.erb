@@ -5,13 +5,12 @@
     <input id="name" type="text" name="name" class="form-control" />
 
     <label for="description" class="form-label">Descrição (opcional)</label>
-    <textarea name="description" cols="40" rows="5" id="description" class="form-control" value="">
-    </textarea>
+    <textarea name="description" cols="40" rows="5" id="description" class="form-control" value=""></textarea>
     <br/>
     <% if materials.size > 0 %>
     <label for="materials" class="form-label">Materiais</label>
     <button id="add-material-button" class="btn btn-secondary btn-sm">
-      <i class="bi bi-plus-square-dotted"></i>
+      <i class="bi bi-plus-square-fill"></i>
     </button>
     <br />
     <div id="material-area">
@@ -79,13 +78,13 @@
      width_input.setAttribute('type', 'number');
      width_input.setAttribute('step', 'any');
      width_input.setAttribute('placeholder', 'Largura');
-     width_input.setAttribute('class', 'form-control');
+     width_input.setAttribute('class', 'form-control mb-2');
 
      let length_input = document.createElement('input');
      length_input.setAttribute('type', 'number');
      length_input.setAttribute('step', 'any');
      length_input.setAttribute('placeholder', 'Comprimento');
-     length_input.setAttribute('class', 'form-control');
+     length_input.setAttribute('class', 'form-control mb-2');
 
      let hidden_input = document.createElement('input');
      hidden_input.setAttribute('type', 'hidden');
@@ -113,7 +112,7 @@
      input.setAttribute('step', 'any');
      input.setAttribute('placeholder', 'Quantidade');
      input.setAttribute('name', `material-quantity`);
-     input.setAttribute('class', 'form-control');
+     input.setAttribute('class', 'form-control mb-2');
 
      return [input];
    }
@@ -128,7 +127,7 @@
      new_div.setAttribute('class', 'my-4');
 
      let select = document.createElement('select');
-     select.setAttribute('class', 'material-selector');
+     select.setAttribute('class', 'material-selector form-select mb-2');
      select.setAttribute('name', `material-name`);
      select.addEventListener("change", updateDropdown);
      select.addEventListener("click", setOldValue);
