@@ -40,7 +40,12 @@
     <tbody>
       <% for cost in costs %>
         <tr>
-          <td><%= cost.name %></td>
+          <td>
+            <a href="/custos/<%= cost.id %>/editar" class="btn btn-sm btn-info mr-2" role="button">
+              <i class="bi bi-pencil-square"></i>
+            </a>
+            <%= cost.name %>
+          </td>
           <td>R$<%= money_format.call(cost.value) %></td>
         </tr>
       <% end %>

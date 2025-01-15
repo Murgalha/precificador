@@ -27,6 +27,20 @@ class DatabaseHandle
     return results
   end
 
+  def get_cost(cost_id)
+    record = @db[:monthly_cost].select(:id, :name, :value).where(:id => cost_id).single_record!
+    return MonthlyCost.new(record[:id], record[:name], record[:value])
+  end
+
+  def update_cost(data)
+    values = {
+      :name => data[:name],
+      :value => data[:value],
+    }
+
+    @db[:monthly_cost].where(:id => data[:id]).update(values)
+  end
+
   def get_salary_info()
     columns = [
       :salary,

@@ -84,6 +84,27 @@ class Server < Roda
           r.redirect '/custos'
         end
       end
+
+      r.on Integer, "editar" do |cost_id|
+        r.get do
+          cost = @db_handle.get_cost cost_id
+          context = { :cost => cost }
+
+          render_page(Templates.edit_cost, "Editar #{cost.name}", context)
+        end
+
+        r.post do
+          data = {
+            :id => cost_id,
+            :name => request.POST['name'].strip,
+            :value => request.POST['value'].to_f
+          }
+
+          @db_handle.update_cost data
+
+          r.redirect "/custos"
+        end
+      end
     end
 
     # /jornada
