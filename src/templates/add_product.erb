@@ -1,0 +1,158 @@
+<h1>Adicionar produto</h1>
+<form action="/produtos/adicionar" method="post">
+  <fieldset>
+    <label for="name" class="form-label">Nome do produto</label>
+    <input id="name" type="text" name="name" class="form-control" />
+
+    <label for="description" class="form-label">Descrição (opcional)</label>
+    <textarea name="description" cols="40" rows="5" id="description" class="form-control" value="">
+    </textarea>
+    <br/>
+    <% if materials.size > 0 %>
+    <label for="materials" class="form-label">Materiais</label>
+    <button id="add-material-button" class="btn btn-secondary btn-sm">
+      <i class="bi bi-plus-square-dotted"></i>
+    </button>
+    <br />
+    <div id="material-area">
+    </div>
+    <% else %>
+    <p>Você não possui nenhum material adicionado.
+      <a href="/materiais/adicionar">Clique aqui</a> para adicionar um.
+    </p>
+    <% end %>
+
+    <label for="work-time" class="form-label">Mão de obra (minutos)</label>
+    <input id="work-time" type="number" step="any" name="work-time" class="form-control" />
+
+    <label for="profit" class="form-label">Lucro</label>
+    <input id="profit" type="number" name="profit" step="any" class="form-control" />
+
+  </fieldset>
+  <button type="submit" class="btn btn-primary my-4">Adicionar</button>
+</form>
+<script>
+ let all_materials = [
+   <% materials.each_with_index do |material, index| %>
+   { name: "<%= material.name %>",
+     id: <%= index %>,
+     measure_type: <%= material.measure_type.value %>
+   },
+   <% end %>
+ ]
+ let materialCount = 0;
+
+ function removeMaterial(event) {
+   event.preventDefault();
+   let parentDiv = event.target.parentNode;
+   let selector = parentDiv.getElementsByClassName('material-selector')[0];
+
+   parentDiv.remove();
+   materialCount--;
+ }
+
+ function updateDropdown(event) {
+   let select = event.target;
+   let parentNode = select.parentNode;
+   let newValue = select.value;
+   let oldValue = select.getAttribute("oldValue");
+
+   let newMaterial = all_materials.find((element) => element.name === newValue);
+   let oldMaterial = all_materials.find((element) => element.name === oldValue);
+
+   let children = [...parentNode.children];
+
+   let removeButton = children.find((x) => x.nodeName === "BUTTON");
+   children.filter((x) => x.nodeName === "INPUT").forEach((x) => x.remove());
+
+   let inputs = createInputs(newMaterial.measure_type);
+   inputs.forEach((x) => parentNode.insertBefore(x, removeButton));
+ }
+
+ function setOldValue(event) {
+   event.target.setAttribute("oldValue", event.target.value);
+ }
+
+ function createInputs(measure_type, index) {
+   if(measure_type === <%= MaterialMeasureType.area.value %>) {
+     let width_input = document.createElement('input');
+     width_input.setAttribute('type', 'number');
+     width_input.setAttribute('step', 'any');
+     width_input.setAttribute('placeholder', 'Largura');
+     width_input.setAttribute('class', 'form-control');
+
+     let length_input = document.createElement('input');
+     length_input.setAttribute('type', 'number');
+     length_input.setAttribute('step', 'any');
+     length_input.setAttribute('placeholder', 'Comprimento');
+     length_input.setAttribute('class', 'form-control');
+
+     let hidden_input = document.createElement('input');
+     hidden_input.setAttribute('type', 'hidden');
+     hidden_input.setAttribute('name', `material-quantity`);
+     hidden_input.setAttribute('class', 'form-control');
+
+     width_input.addEventListener('change', (event) => {
+       width = width_input.value === '' ? 0 : width_input.value;
+       length = length_input.value === '' ? 0 : length_input.value;
+
+       hidden_input.value = `${width}x${length}`;
+     });
+     length_input.addEventListener('change', (event) => {
+       width = width_input.value === '' ? 0 : width_input.value;
+       length = length_input.value === '' ? 0 : length_input.value;
+
+       hidden_input.value = `${width}x${length}`;
+     });
+
+     return [width_input, length_input, hidden_input];
+   }
+   else {
+     let input = document.createElement('input');
+     input.setAttribute('type', 'number');
+     input.setAttribute('step', 'any');
+     input.setAttribute('placeholder', 'Quantidade');
+     input.setAttribute('name', `material-quantity`);
+     input.setAttribute('class', 'form-control');
+
+     return [input];
+   }
+ }
+
+ (function(w, d){
+   let materialButton = d.getElementById("add-material-button").addEventListener("click", function(event){
+     event.preventDefault();
+
+     let div = d.querySelector("#material-area");
+     let new_div = document.createElement('div');
+     new_div.setAttribute('class', 'my-4');
+
+     let select = document.createElement('select');
+     select.setAttribute('class', 'material-selector');
+     select.setAttribute('name', `material-name`);
+     select.addEventListener("change", updateDropdown);
+     select.addEventListener("click", setOldValue);
+
+     all_materials.forEach((material, index) => {
+       let option = document.createElement('option');
+       option.setAttribute('value', material.name);
+       option.appendChild(document.createTextNode(material.name));
+       select.appendChild(option);
+     });
+     let material = all_materials[0];
+     let inputs = createInputs(material.measure_type, materialCount);
+
+     let button = document.createElement('button');
+     button.setAttribute('class', 'remove-material-button btn btn-outline-danger btn-sm')
+     button.setAttribute('onclick', 'removeMaterial(event)');
+     button.appendChild(document.createTextNode('Remover'));
+
+     new_div.appendChild(select);
+     inputs.forEach((x) => new_div.appendChild(x));
+     new_div.appendChild(button);
+
+     div.appendChild(new_div);
+     materialCount++;
+   });
+ })(window, document);
+</script>

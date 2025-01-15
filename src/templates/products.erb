@@ -1,0 +1,16 @@
+<div class="d-flex align-items-center mb-4">
+  <h1 class="me-4">Produtos</h1>
+  <a class="btn btn-primary" href="/produtos/adicionar" role="button">Adicionar</a>
+</div>
+
+<% for product in products %>
+  <div class="mb-3">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title"><%= product.name %></h5>
+        <p class="card-text"><%= product.description %></p>
+        <a href="/produtos/<%= product.id %>" class="card-link">Ver detalhes</a>
+      </div>
+    </div>
+  </div>
+<% end %>

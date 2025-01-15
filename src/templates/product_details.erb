@@ -1,0 +1,64 @@
+<div class="d-flex align-items-left mb-4 flex-column">
+  <h1 class="me-4 display-3"><%=product.name%></h1>
+  <p class="fs-5 text-body-secondary"><%= product.description %></p>
+</div>
+
+<h2>Materiais</h2>
+<table class="table table-sm">
+  <thead>
+    <tr class="table-active">
+      <th scope="col">Material</th>
+      <th scope="col">Quantidade</th>
+      <th scope="col">Preço</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% for material in product.materials %>
+      <tr>
+        <td>
+          <%= material.name %>
+        </td>
+        <% if material.is_a? AreaProductMaterial %>
+          <td>
+            <%=material.length%> x <%=material.width%> cm
+          </td>
+        <% elsif material.is_a? LengthProductMaterial  %>
+          <td>
+            <%= material.quantity %> cm
+          </td>
+        <% else %>
+          <td>
+            <%= material.quantity %> un.
+          </td>
+        <% end %>
+        <td>
+          R$<%= money_format material.get_cost %>
+        </td>
+        <tr>
+    <% end %>
+  </tbody>
+  <tfoot>
+    <tr class="table-active">
+      <td colspan="2"><strong>Subtotal</strong></td>
+      <td><strong>R$<%= money_format product.get_material_cost %></strong></td>
+    </tr>
+  </tfoot>
+</table>
+
+<h2>Trabalho</h2>
+<table class="table table-sm">
+  <tbody>
+    <tr>
+      <td>Mão de obra</td>
+      <td></td>
+      <td><strong>R$<%= money_format product.get_labor_cost(salary_info) %></strong></td>
+    </tr>
+    <tr>
+      <td>Lucro</td>
+      <td></td>
+      <td><strong>R$<%= money_format product.get_profit_wage(salary_info) %></strong></td>
+    </tr>
+  </tbody>
+</table>
+
+<h4><strong>Total: R$<%= money_format product.get_final_price(salary_info) %></strong></h4>
