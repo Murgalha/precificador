@@ -3,6 +3,12 @@
   <a class="btn btn-primary" href="/jornada/editar" role="button">Editar</a>
 </div>
 
+<% if salary_info.work_week.days.inject(0){ |sum, x| sum + x.work_time } == 0 %>
+<div class="alert alert-warning" role="alert">
+  Você ainda não configurou sua jornada de trabalho. Clique no botão editar acima.
+</div>
+<% end %>
+
 <table class="table table-sm">
   <thead class="table-active">
     <tr>
