@@ -201,7 +201,7 @@ class DatabaseHandle
       if material_type == MaterialMeasureType.area.value
         split = quantity.split('x')
         quantities.append(split[0])
-        quantities.append(split[0])
+        quantities.append(split[1])
       else
         quantities.append(quantity)
       end
