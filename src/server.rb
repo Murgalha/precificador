@@ -185,6 +185,7 @@ class Server < Roda
       end
     end
 
+    # /produtos
     r.on "produtos" do
       r.is do
         products = @db_handle.get_products_summary
@@ -257,7 +258,7 @@ def parse_body_with_list_param(body)
   body_str.split('&').each do |param|
     split = param.split('=')
     name = split[0]
-    value = split[1]
+    value = if split[1] != nil then split[1] else '' end
 
     if !params.has_key? name
       params[name] = []
