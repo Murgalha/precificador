@@ -84,6 +84,7 @@ class DatabaseHandle
 
   def get_materials
     columns = [
+      :id,
       :name,
       :note,
       :measure_type,
