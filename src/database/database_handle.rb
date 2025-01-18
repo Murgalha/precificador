@@ -108,6 +108,29 @@ class DatabaseHandle
     return results
   end
 
+  def get_material(material_id)
+    columns = [
+      :id,
+      :name,
+      :note,
+      :measure_type,
+      :price,
+      :base_width,
+      :base_length
+    ]
+
+    record = @db[:material].select(*columns).where(:id => material_id).single_record!
+      id = record[:id]
+      name = record[:name]
+      note = record[:note]
+      mt = MaterialMeasureType.from_value(record[:measure_type])
+      price = record[:price]
+      bw = if mt == MaterialMeasureType.area then record[:base_width] else nil end
+      bl = if mt == MaterialMeasureType.area then record[:base_length] else nil end
+
+      return Material.new(id, name, note, mt, price, bw, bl)
+  end
+
   def add_material(name, note, type, price, bw, bl)
     base_width = if type == MaterialMeasureType.area.value then bw else nil end
     base_length = if type == MaterialMeasureType.area.value then bl else nil end
@@ -122,6 +145,22 @@ class DatabaseHandle
     }
 
     @db[:material].insert(values)
+  end
+
+  def remove_material(material_id)
+    @db[:material].where(:id => material_id).delete
+  end
+
+  def update_material(data)
+    values = {
+      :name => data[:name],
+      :note => data[:note],
+      :price => data[:price],
+      :base_width => data[:base_width],
+      :base_length => data[:base_length],
+    }
+
+    @db[:material].where(:id => data[:id]).update(values)
   end
 
   def get_products_summary

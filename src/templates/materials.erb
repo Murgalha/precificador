@@ -13,7 +13,19 @@
   <tbody>
     <% for material in materials %>
       <tr>
-        <td><%= material.name %></td>
+        <td>
+          <button type="button"
+                  onclick="confirmRemoval(<%= material.id %>)"
+                  class="btn btn-outline-danger btn-sm"
+                  data-bs-toggle="modal"
+                  data-bs-target="#staticBackdrop">
+            <i class="bi bi-trash"></i>
+          </button>
+          <a href="/materiais/<%= material.id %>/editar" class="btn btn-sm btn-outline-primary mr-2" role="button">
+            <i class="bi bi-pencil-square"></i>
+          </a>
+          <%= material.name %>
+        </td>
 
         <% if material.measure_type == MaterialMeasureType.area %>
           <td>
@@ -32,3 +44,25 @@
     <% end %>
   </tbody>
 </table>
+
+<script>
+ let all_materials = [
+   <% materials.each do |material| %>
+   { name: "<%= material.name %>",
+     id: <%= material.id %>,
+   },
+   <% end %>
+ ]
+
+ function confirmRemoval(id) {
+   let material = all_materials.find((x) => x.id === id);
+
+   let title = `Remover ${material.name}?`;
+   let description = `Esta ação não poderá ser desfeita.`;
+   openModal(title, description, async () => { await removeMaterial(material) });
+ }
+
+ async function removeMaterial(material) {
+   await fetch(`/materiais/${material.id}/remover`, { method: "POST" });
+ }
+</script>

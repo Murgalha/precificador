@@ -23,6 +23,10 @@ class Templates
     'add_material.erb'
   end
 
+  def self.edit_material
+    'edit_material.erb'
+  end
+
   def self.products
     'products.erb'
   end

@@ -183,6 +183,41 @@ class Server < Roda
           r.redirect "/materiais"
         end
       end
+
+      r.on Integer do |material_id|
+        r.on "editar" do
+          r.get do
+            material = @db_handle.get_material material_id
+            context = { :material => material }
+
+            render_page(Templates.edit_material, "Editar #{material.name}", context)
+          end
+
+          r.post do
+
+            data = {
+              :id => material_id,
+              :name => request.POST['name'].strip,
+              :note => request.POST['note'] == nil ? '' : request.POST['note'],
+              :price => request.POST['price'].to_f,
+              :type => request.POST['type'].to_i,
+              :base_width => request.POST['base-width'].to_i,
+              :base_length => request.POST['base-length'].to_i,
+            }
+            puts data
+            @db_handle.update_material data
+
+            r.redirect "/materiais"
+          end
+        end
+
+        r.on "remover" do
+          r.post do
+            @db_handle.remove_material material_id
+            "Material removido com sucesso"
+          end
+        end
+      end
     end
 
     # /produtos
