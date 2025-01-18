@@ -166,8 +166,7 @@ class DatabaseHandle
       quantities = @db[:product_material_quantities].select(:quantity).where(:product_material_id => pm_id).all
 
       if row[:measure_type] == MaterialMeasureType.area.value
-        product_materials.append(AreaProductMaterial.new(row[:name], row[:price], row[:base_length], row[:base_length], quantities[0][:quantity], quantities[1][:quantity]))
-
+        product_materials.append(AreaProductMaterial.new(row[:name], row[:price], row[:base_length], row[:base_width], quantities[0][:quantity], quantities[1][:quantity]))
       elsif row[:measure_type] == MaterialMeasureType.length.value
         product_materials.append(LengthProductMaterial.new(row[:name], row[:price], quantities[0][:quantity]))
       else
