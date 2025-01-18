@@ -48,7 +48,7 @@ class Server < Roda
   plugin :assets, css: 'styles.css', js: 'utils.js'
 
   route do |r|
-    @db_handle = DatabaseHandle.new('./db.sqlite3')
+    @db_handle = DatabaseHandle.new('./precificador.db')
 
     r.assets
     r.root do
