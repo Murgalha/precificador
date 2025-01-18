@@ -197,8 +197,9 @@ class Server < Roda
       r.is Integer do |product_id|
         product = @db_handle.get_product(product_id)
         salary_info = @db_handle.get_salary_info
+        costs = @db_handle.get_costs
 
-        context = {:product => product, :salary_info => salary_info}
+        context = {:product => product, :salary_info => salary_info, :monthly_costs => costs}
         render_page(Templates.product_details, product.name, context)
       end
 

@@ -51,14 +51,14 @@
     <tr>
       <td>Mão de obra</td>
       <td></td>
-      <td><strong>R$<%= money_format product.get_labor_cost(salary_info) %></strong></td>
+      <td><strong>R$<%= money_format product.get_labor_cost(salary_info, monthly_costs) %></strong></td>
     </tr>
     <tr>
       <td>Lucro</td>
       <td></td>
-      <td><strong>R$<%= money_format product.get_profit_wage(salary_info) %></strong></td>
+      <td><strong>R$<%= money_format product.get_profit_wage(salary_info, monthly_costs) %></strong></td>
     </tr>
   </tbody>
 </table>
 
-<h4><strong>Total: R$<%= money_format product.get_final_price(salary_info) %></strong></h4>
+<h4><strong>Total: R$<%= money_format product.get_final_price(salary_info, monthly_costs) %></strong></h4>

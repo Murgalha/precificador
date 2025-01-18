@@ -248,11 +248,11 @@ class Product
     @materials = materials
   end
 
-  def get_final_price(salary_info)
+  def get_final_price(salary_info, monthly_costs)
     material_cost = get_material_cost()
-    labor_cost = get_labor_cost(salary_info)
+    labor_cost = get_labor_cost(salary_info, monthly_costs)
 
-    return labor_cost + material_cost + get_profit_wage(salary_info)
+    return labor_cost + material_cost + get_profit_wage(salary_info, monthly_costs)
   end
 
   def get_material_cost
@@ -263,9 +263,10 @@ class Product
     return material_sum
   end
 
-  def get_labor_cost(salary_info)
+  def get_labor_cost(salary_info, monthly_costs)
     wage = 0
     worked_minutes = 0
+    fixed_cost_sum = monthly_costs.inject(0){ |sum, x| sum + x.value }
 
     for day in salary_info.work_week.days
       worked_minutes += day.work_time
@@ -273,17 +274,17 @@ class Product
     worked_minutes *= 4
 
     if worked_minutes != 0
-      wage_per_minute = salary_info.salary.value / worked_minutes
+      wage_per_minute = (salary_info.salary.value.to_f + fixed_cost_sum) / worked_minutes.to_f
       wage = wage_per_minute * @minutes_needed
     end
 
     return wage
   end
 
-  def get_profit_wage(salary_info)
+  def get_profit_wage(salary_info, monthly_costs)
     material_cost = get_material_cost
-    labor_cost = get_labor_cost(salary_info)
+    labor_cost = get_labor_cost(salary_info, monthly_costs)
 
-    return (material_cost + labor_cost) * (@profit / 100)
+    return (material_cost + labor_cost) * (@profit / 100.0)
   end
 end
