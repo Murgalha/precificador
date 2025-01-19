@@ -15,7 +15,6 @@
     <div class="form-floating">
       <select class="form-select" name="type" id="type">
         <% measure_types.each_with_index do |type, index| %>
-          <% puts "type: #{type.name}" %>
             <% if index == 0 %>
             <option value="<%= type.value %>" selected>
               <%= get_translation type %>

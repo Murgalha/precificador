@@ -204,7 +204,7 @@ class Server < Roda
               :base_width => request.POST['base-width'].to_i,
               :base_length => request.POST['base-length'].to_i,
             }
-            puts data
+
             @db_handle.update_material data
 
             r.redirect "/materiais"
