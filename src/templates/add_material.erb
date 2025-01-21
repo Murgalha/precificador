@@ -2,7 +2,7 @@
 <form action="/materiais/adicionar" method="post">
   <fieldset>
     <div class="mb-4 form-floating">
-      <input id="name" type="text" name="name" class="form-control" />
+      <input required id="name" type="text" name="name" class="form-control" />
       <label for="name" class="form-label">Nome do material</label>
     </div>
 
@@ -15,7 +15,7 @@
     <div class="form-floating">
       <select class="form-select" name="type" id="type">
         <% measure_types.each_with_index do |type, index| %>
-            <% if index == 0 %>
+          <% if index == 0 %>
             <option value="<%= type.value %>" selected>
               <%= get_translation type %>
             </option>
@@ -38,7 +38,7 @@
     </div>
 
     <div class="form-floating mb-4">
-      <input id="price" class="form-control" type="number" name="price" step="any" />
+      <input required id="price" class="form-control" type="number" name="price" step="any" />
       <label for="price">Preço</label>
     </div>
   </fieldset>
@@ -49,13 +49,16 @@
    d.querySelector("select[id='type']").addEventListener('change', function(e){
      var option = this.options[this.selectedIndex].value;
 
+     let div = document.querySelector("#base-area");
+     let inputs = [...div.getElementsByTagName("input")];
+     console.log(inputs);
      if(option == "<%= MaterialMeasureType.area.value %>") {
-       div = document.querySelector("#base-area");
        div.style['visibility'] = 'visible'
+       inputs.forEach((x) => x.required = true);
      }
      else {
-       div = document.querySelector("#base-area");
        div.style['visibility'] = 'hidden'
+       inputs.forEach((x) => x.required = false);
      }
    });
  })(window, document);

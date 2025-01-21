@@ -3,14 +3,15 @@
   <fieldset>
     <div class="mb-3">
       <label for="salary" class="form-label">Salário</label>
-      <input id="salary" type="text" name="salary" class="form-control" value="<%= salary.value %>" />
+      <input required id="salary" type="text" name="salary" class="form-control" value="<%= salary.value %>" />
     </div>
 
     <% for day in days %>
       <div>
         <label for="<%= day.name %>" class="form-label"><%= get_translation day %></label>
         <div class="input-group mb-3">
-          <input type="number"
+          <input required
+                 type="number"
                  step="any"
                  name="<%= day.name %>"
                  id="<%= day.name %>"

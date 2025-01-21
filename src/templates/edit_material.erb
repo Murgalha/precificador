@@ -2,7 +2,7 @@
 <form action="/materiais/<%= material.id %>/editar" method="post">
   <fieldset>
     <div class="mb-4 form-floating">
-      <input id="name" type="text" name="name" class="form-control" value="<%= material.name %>" />
+      <input required id="name" type="text" name="name" class="form-control" value="<%= material.name %>" />
       <label for="name" class="form-label">Nome do material</label>
     </div>
 
@@ -16,15 +16,15 @@
     <% if material.measure_type.value == MaterialMeasureType.area.value %>
       <div id="base-area" class="my-4">
         <label for="base-width" class="form-label">Largura base (cm)</label>
-        <input id="base-width" type="text" name="base-width" class="form-control" value="<%= material.base_width %>" />
+        <input required id="base-width" type="text" name="base-width" class="form-control" value="<%= material.base_width %>" />
 
         <label for="base-length" class="form-label">Comprimento base (cm)</label>
-        <input id="base-length" type="text" name="base-length" class="form-control" value="<%= material.base_length %>" />
+        <input required id="base-length" type="text" name="base-length" class="form-control" value="<%= material.base_length %>" />
       </div>
     <% end %>
 
     <div class="form-floating mb-4">
-      <input id="price" class="form-control" type="number" name="price" step="any" value="<%= material.price %>" />
+      <input required id="price" class="form-control" type="number" name="price" step="any" value="<%= material.price %>" />
       <label for="price">Preço</label>
     </div>
   </fieldset>

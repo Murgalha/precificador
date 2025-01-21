@@ -2,30 +2,30 @@
 <form action="/produtos/adicionar" method="post">
   <fieldset>
     <label for="name" class="form-label">Nome do produto</label>
-    <input id="name" type="text" name="name" class="form-control" />
+    <input required id="name" type="text" name="name" class="form-control" />
 
     <label for="description" class="form-label">Descrição (opcional)</label>
     <textarea name="description" cols="40" rows="5" id="description" class="form-control" value=""></textarea>
     <br/>
     <% if materials.size > 0 %>
-    <label for="materials" class="form-label">Materiais</label>
-    <button id="add-material-button" class="btn btn-secondary btn-sm">
-      <i class="bi bi-plus-square-fill"></i>
-    </button>
-    <br />
-    <div id="material-area">
-    </div>
+      <label for="materials" class="form-label">Materiais</label>
+      <button id="add-material-button" class="btn btn-secondary btn-sm">
+        <i class="bi bi-plus-square-fill"></i>
+      </button>
+      <br />
+      <div id="material-area">
+      </div>
     <% else %>
-    <p>Você não possui nenhum material adicionado.
-      <a href="/materiais/adicionar">Clique aqui</a> para adicionar um.
-    </p>
+      <p>Você não possui nenhum material adicionado.
+        <a href="/materiais/adicionar">Clique aqui</a> para adicionar um.
+      </p>
     <% end %>
 
     <label for="work-time" class="form-label">Mão de obra (minutos)</label>
-    <input id="work-time" type="number" step="any" name="work-time" class="form-control" />
+    <input required id="work-time" type="number" step="any" name="work-time" class="form-control" />
 
     <label for="profit" class="form-label">Lucro</label>
-    <input id="profit" type="number" name="profit" step="any" class="form-control" />
+    <input required  id="profit" type="number" name="profit" step="any" class="form-control" />
 
   </fieldset>
   <button type="submit" class="btn btn-primary my-4">Adicionar</button>
@@ -77,12 +77,14 @@
      width_input.setAttribute('step', 'any');
      width_input.setAttribute('placeholder', 'Largura');
      width_input.setAttribute('class', 'form-control mb-2');
+     width_input.required = true;
 
      let length_input = document.createElement('input');
      length_input.setAttribute('type', 'number');
      length_input.setAttribute('step', 'any');
      length_input.setAttribute('placeholder', 'Comprimento');
      length_input.setAttribute('class', 'form-control mb-2');
+     length_input.required = true;
 
      let hidden_input = document.createElement('input');
      hidden_input.setAttribute('type', 'hidden');
@@ -111,6 +113,7 @@
      input.setAttribute('placeholder', 'Quantidade');
      input.setAttribute('name', `material-quantity`);
      input.setAttribute('class', 'form-control mb-2');
+     input.required = true;
 
      return [input];
    }
