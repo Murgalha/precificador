@@ -249,12 +249,17 @@ class Server < Roda
         r.post do
           params = parse_body_with_list_param(request.body)
 
+          materials = []
+          if params['material-name'] != nil
+            materials = params['material-name'].zip(params['material-quantity'])
+          end
+
           data = {
             :name => params['name'].first.strip,
             :description => params['description'].first.strip,
             :work_time => params['work-time'].first.to_i,
             :profit => params['profit'].first.to_i,
-            :materials => params['material-name'].zip(params['material-quantity']),
+            :materials => materials,
           }
 
           @db_handle.add_product(data)
