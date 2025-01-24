@@ -6,7 +6,7 @@ gem "puma", "~> 6.5"
 gem "rake", "~> 13.2"
 gem "sequel", "~> 5.88"
 gem "sqlite3", "~> 2.5"
+gem "tilt", "~> 2.5"
 
 gem "filewatcher", "~> 2.1", :group => :development
-
-gem "tilt", "~> 2.5"
+gem "rspec", "~> 3.13", :group => :development

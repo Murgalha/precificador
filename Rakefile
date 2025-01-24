@@ -12,6 +12,10 @@ task :dev do
   end
 end
 
+task :test do
+  sh "rspec --format doc"
+end
+
 def spawn_process
   Process.spawn("bundle exec rackup -p 3000")
 end
