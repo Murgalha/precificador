@@ -9,23 +9,27 @@
     <br/>
     <% if materials.size > 0 %>
       <label for="materials" class="form-label">Materiais</label>
-      <button id="add-material-button" class="btn btn-secondary btn-sm">
-        <i class="bi bi-plus-square-fill"></i>
-      </button>
       <br />
       <div id="material-area">
       </div>
+      <button id="add-material-button" class="btn btn-secondary btn-sm">
+        <i class="bi bi-plus-square-fill" style="margin-right: 8px;"></i>Adicionar
+      </button>
     <% else %>
       <p>Você não possui nenhum material adicionado.
         <a href="/materiais/adicionar">Clique aqui</a> para adicionar um.
       </p>
     <% end %>
 
-    <label for="work-time" class="form-label">Mão de obra (minutos)</label>
-    <input required id="work-time" type="number" step="any" name="work-time" class="form-control" />
+    <div class="mt-4">
+      <label for="work-time" class="form-label">Mão de obra (minutos)</label>
+      <input required id="work-time" type="number" step="any" name="work-time" class="form-control" />
+    </div>
 
-    <label for="profit" class="form-label">Lucro</label>
-    <input required  id="profit" type="number" name="profit" step="any" class="form-control" />
+    <div class="mt-4">
+      <label for="profit" class="form-label">Lucro</label>
+      <input required  id="profit" type="number" name="profit" step="any" class="form-control" />
+    </div>
 
   </fieldset>
   <button type="submit" class="btn btn-primary my-4">Adicionar</button>
