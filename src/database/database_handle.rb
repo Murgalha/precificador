@@ -199,6 +199,7 @@ class DatabaseHandle
               .join_table(:left, :material, pm_material_id_col => material_id_col)
               .select(*material_cols)
               .where(:product_id => product_id)
+              .order(Sequel.lit('LOWER(material.name)'))
 
     product_materials = []
     query.each do |row|
