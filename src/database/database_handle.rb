@@ -20,7 +20,7 @@ class DatabaseHandle
 
   def get_costs()
     results = []
-    @db[:monthly_cost].select(:id, :name, :value).all do |row|
+    @db[:monthly_cost].select(:id, :name, :value).order(Sequel.lit('LOWER(name)')).all do |row|
       results.append(MonthlyCost.new(row[:id], row[:name], row[:value]))
     end
 
@@ -93,7 +93,7 @@ class DatabaseHandle
       :base_length
     ]
     results = []
-    @db[:material].select(*columns).all do |row|
+    @db[:material].select(*columns).order(Sequel.lit('LOWER(name)')).all do |row|
       id = row[:id]
       name = row[:name]
       note = row[:note]
@@ -165,7 +165,7 @@ class DatabaseHandle
 
   def get_products_summary
     results = []
-    @db[:product].select(:id, :name, :description).all do |row|
+    @db[:product].select(:id, :name, :description).order(Sequel.lit('LOWER(name)')).all do |row|
       id = row[:id]
       name = row[:name]
       description = row[:description]
