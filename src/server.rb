@@ -229,13 +229,44 @@ class Server < Roda
         render_page(Templates.products, 'Produtos', context)
       end
 
-      r.is Integer do |product_id|
+      r.on Integer do |product_id|
         product = @db_handle.get_product(product_id)
-        salary_info = @db_handle.get_salary_info
-        costs = @db_handle.get_costs
 
-        context = {:product => product, :salary_info => salary_info, :monthly_costs => costs}
-        render_page(Templates.product_details, product.name, context)
+        r.is do
+          salary_info = @db_handle.get_salary_info
+          costs = @db_handle.get_costs
+
+          context = {:product => product, :salary_info => salary_info, :monthly_costs => costs}
+          render_page(Templates.product_details, product.name, context)
+        end
+
+        r.on "editar" do
+          r.get do
+            materials = @db_handle.get_materials
+            context = {:product => product, :materials => materials}
+            render_page(Templates.edit_product, "Editar #{product.name}", context)
+          end
+
+          r.post do
+            params = parse_body_with_list_param(request.body)
+
+            materials = []
+            if params['material-id'] != nil
+              materials = params['material-id'].zip(params['material-quantity'])
+            end
+
+            data = {
+              :name => params['name'].first.strip,
+              :description => params['description'].first.strip,
+              :work_time => params['work-time'].first.to_i,
+              :profit => params['profit'].first.to_i,
+              :materials => materials,
+            }
+
+            @db_handle.edit_product(product_id, data)
+            r.redirect "/produtos/#{product_id}"
+          end
+        end
       end
 
       r.on "adicionar" do
