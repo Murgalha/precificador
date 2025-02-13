@@ -268,7 +268,6 @@ class DatabaseHandle
       :minutes_needed => new_data[:work_time],
       :profit => new_data[:profit],
     }
-    puts "#{new_data}"
     @db[:product].where(id: product_id).update(values)
 
     # Deleting old data
