@@ -120,15 +120,15 @@ class DatabaseHandle
     ]
 
     record = @db[:material].select(*columns).where(:id => material_id).single_record!
-      id = record[:id]
-      name = record[:name]
-      note = record[:note]
-      mt = MaterialMeasureType.from_value(record[:measure_type])
-      price = record[:price]
-      bw = if mt == MaterialMeasureType.area then record[:base_width] else nil end
-      bl = if mt == MaterialMeasureType.area then record[:base_length] else nil end
+    id = record[:id]
+    name = record[:name]
+    note = record[:note]
+    mt = MaterialMeasureType.from_value(record[:measure_type])
+    price = record[:price]
+    bw = if mt == MaterialMeasureType.area then record[:base_width] else nil end
+    bl = if mt == MaterialMeasureType.area then record[:base_length] else nil end
 
-      return Material.new(id, name, note, mt, price, bw, bl)
+    return Material.new(id, name, note, mt, price, bw, bl)
   end
 
   def add_material(name, note, type, price, bw, bl)
@@ -177,9 +177,9 @@ class DatabaseHandle
   end
 
   def get_product(product_id)
-    product_result = @db[:product].select(:name, :description, :minutes_needed, :profit)
-      .where(:id => product_id)
-      .single_record!
+    product_result = @db[:product].select(:id, :name, :description, :minutes_needed, :profit)
+        .where(:id => product_id)
+        .single_record!
 
     material_cols = [
       Sequel.qualify(:material, :name),
@@ -207,15 +207,15 @@ class DatabaseHandle
       quantities = @db[:product_material_quantities].select(:quantity).where(:product_material_id => pm_id).all
 
       if row[:measure_type] == MaterialMeasureType.area.value
-        product_materials.append(AreaProductMaterial.new(row[:name], row[:price], row[:base_length], row[:base_width], quantities[0][:quantity], quantities[1][:quantity]))
+        product_materials.append(AreaProductMaterial.new(pm_id, row[:name], row[:price], row[:base_length], row[:base_width], quantities[0][:quantity], quantities[1][:quantity]))
       elsif row[:measure_type] == MaterialMeasureType.length.value
-        product_materials.append(LengthProductMaterial.new(row[:name], row[:price], quantities[0][:quantity]))
+        product_materials.append(LengthProductMaterial.new(pm_id, row[:name], row[:price], quantities[0][:quantity]))
       else
-        product_materials.append(UnitProductMaterial.new(row[:name], row[:price], quantities[0][:quantity]))
+        product_materials.append(UnitProductMaterial.new(pm_id, row[:name], row[:price], quantities[0][:quantity]))
       end
     end
 
-    Product.new(product_result[:name], product_result[:description], product_result[:minutes_needed], product_result[:profit], product_materials)
+    Product.new(product_result[:id], product_result[:name], product_result[:description], product_result[:minutes_needed], product_result[:profit], product_materials)
   end
 
   def add_product(data)
@@ -235,6 +235,62 @@ class DatabaseHandle
       record = @db[:material].select(:id, :measure_type).where(:name => name).single_record!
 
       material_id = record[:id]
+      material_type = record[:measure_type]
+
+      quantities = []
+      if material_type == MaterialMeasureType.area.value
+        split = quantity.split('x')
+        quantities.append(split[0])
+        quantities.append(split[1])
+      else
+        quantities.append(quantity)
+      end
+
+      values = {
+        :product_id => product_id,
+        :material_id => material_id,
+      }
+      inserted_id = @db[:product_materials].insert(values)
+
+      for q in quantities
+        values = {
+          :product_material_id => inserted_id,
+          :quantity => q,
+        }
+        @db[:product_material_quantities].insert(values)
+      end
+    end
+  end
+
+  def edit_product(product_id, new_data)
+    values = {
+      :name => new_data[:name],
+      :description => new_data[:description],
+      :minutes_needed => new_data[:work_time],
+      :profit => new_data[:profit],
+    }
+    @db[:product].where(id: product_id).update(values)
+
+    # Deleting old data
+    product_materials = @db[:product_materials]
+                          .where(product_id: product_id)
+                          .select(:id).all
+
+    pm_ids = product_materials.map { |x| x[:id] }
+    prod_mat_q = @db[:product_material_quantities]
+                   .where(:product_material_id => pm_ids)
+                   .select(:id).all
+    pmq_ids = prod_mat_q.map { |x| x[:id] }
+
+    @db[:product_material_quantities].where(:id => pmq_ids).delete
+    @db[:product_materials].where(:id => pm_ids).delete
+
+    # Inserting updated material data
+    for material in new_data[:materials]
+      material_id = material[0]
+      quantity = material[1]
+
+      record = @db[:material].select(:measure_type).where(:id => material_id).single_record!
       material_type = record[:measure_type]
 
       quantities = []

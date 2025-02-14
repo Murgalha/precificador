@@ -181,9 +181,10 @@ class ProductSummary
 end
 
 class ProductMaterial
-  attr_reader :name, :price
+  attr_reader :id, :name, :price
 
-  def initialize(name, price)
+  def initialize(id, name, price)
+    @id = id
     @name = name
     @price = price
   end
@@ -194,8 +195,8 @@ end
 class AreaProductMaterial < ProductMaterial
   attr_reader :width, :length, :base_width, :base_length
 
-  def initialize(name, price, bw, bl, w, l)
-    super(name, price)
+  def initialize(id, name, price, bw, bl, w, l)
+    super(id, name, price)
 
     @base_width = bw
     @base_length = bl
@@ -214,8 +215,8 @@ end
 class UnitProductMaterial < ProductMaterial
   attr_reader :quantity
 
-  def initialize(name, price, quantity)
-    super(name, price)
+  def initialize(id, name, price, quantity)
+    super(id, name, price)
     @quantity = quantity
   end
 
@@ -227,8 +228,8 @@ end
 class LengthProductMaterial < ProductMaterial
   attr_reader :quantity
 
-  def initialize(name, price, quantity)
-    super(name, price)
+  def initialize(id, name, price, quantity)
+    super(id, name, price)
     @quantity = quantity
   end
 
@@ -238,9 +239,10 @@ class LengthProductMaterial < ProductMaterial
 end
 
 class Product
-  attr_reader :name, :description, :minutes_needed, :profit, :materials
+  attr_reader :id, :name, :description, :minutes_needed, :profit, :materials
 
-  def initialize(name, description, minutes_needed, profit, materials)
+  def initialize(id, name, description, minutes_needed, profit, materials)
+    @id = id
     @name = name
     @description = description
     @minutes_needed = minutes_needed

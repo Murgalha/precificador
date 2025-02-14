@@ -35,6 +35,10 @@ class Templates
     'add_product.erb'
   end
 
+  def self.edit_product
+    'edit_product.erb'
+  end
+
   def self.product_details
     'product_details.erb'
   end

@@ -1,6 +1,9 @@
 <div class="d-flex align-items-left mb-4 flex-column">
   <h1 class="me-4 display-3"><%=product.name%></h1>
   <p class="fs-5 text-body-secondary"><%= product.description %></p>
+  <div>
+    <a class="btn btn-primary" href="/produtos/<%= product.id %>/editar" role="button">Editar</a>
+  </div>
 </div>
 
 <h2>Materiais</h2>
