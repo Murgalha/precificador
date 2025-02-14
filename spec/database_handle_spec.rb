@@ -44,6 +44,35 @@ RSpec.describe DatabaseHandle do
     end
   end
 
+  describe "#add_product" do
+    it "saves data" do
+      handle = DatabaseHandle.new(":memory:")
+
+      handle.add_material("material 1", "", MaterialMeasureType.unit.value, 1.2, nil, nil)
+
+      product_data = {
+        :name => "test product",
+        :description => "test description",
+        :work_time => 60,
+        :profit => 50,
+        :materials => [["material 1", 5]]
+      }
+      handle.add_product(product_data)
+      product = handle.get_product 1
+
+      expect(product.name).to eq "test product"
+      expect(product.description).to eq "test description"
+      expect(product.minutes_needed).to eq 60
+      expect(product.profit).to eq 50
+
+      expect(product.materials.size).to eq(1)
+      material = product.materials[0]
+      expect(material.is_a? UnitProductMaterial).to be_truthy
+      expect(material.name).to eq("material 1")
+      expect(material.quantity).to eq(5)
+    end
+  end
+
   describe "#edit_product" do
     it "saves new data and remove old material data" do
       handle = DatabaseHandle.new(":memory:")
