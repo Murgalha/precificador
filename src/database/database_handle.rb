@@ -182,6 +182,7 @@ class DatabaseHandle
         .single_record!
 
     material_cols = [
+      Sequel.qualify(:material, :id).as(:material_id),
       Sequel.qualify(:material, :name),
       Sequel.qualify(:material, :price),
       Sequel.qualify(:material, :measure_type),
@@ -199,7 +200,7 @@ class DatabaseHandle
               .join_table(:left, :material, pm_material_id_col => material_id_col)
               .select(*material_cols)
               .where(:product_id => product_id)
-              .order(Sequel.lit('LOWER(material.name)'))
+              .order(:material_id)
 
     product_materials = []
     query.each do |row|
