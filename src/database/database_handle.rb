@@ -124,7 +124,12 @@ class DatabaseHandle
       :base_length
     ]
 
-    record = @db[:material].select(*columns).where(:id => material_id).single_record!
+    record = @db[:material].select(*columns).where(:id => material_id).first
+
+    if record == nil
+      return nil
+    end
+
     id = record[:id]
     name = record[:name]
     note = record[:note]
