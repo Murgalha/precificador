@@ -28,7 +28,12 @@ class DatabaseHandle
   end
 
   def get_cost(cost_id)
-    record = @db[:monthly_cost].select(:id, :name, :value).where(:id => cost_id).single_record!
+    record = @db[:monthly_cost].select(:id, :name, :value).where(:id => cost_id).first
+
+    if record == nil
+      return nil
+    end
+
     return MonthlyCost.new(record[:id], record[:name], record[:value])
   end
 
