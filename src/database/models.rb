@@ -33,31 +33,31 @@ class WorkWeek
   end
 
   def sunday
-    @days.filter { |x| x == :sunday }.first
+    @days.filter { |x| x.name == :sunday }.first
   end
 
   def monday
-    @days.filter { |x| x == :monday }.first
+    @days.filter { |x| x.name == :monday }.first
   end
 
   def tuesday
-    @days.filter { |x| x == :tuesday }.first
+    @days.filter { |x| x.name == :tuesday }.first
   end
 
   def wednesday
-    @days.filter { |x| x == :wednesday }.first
+    @days.filter { |x| x.name == :wednesday }.first
   end
 
   def thursday
-    @days.filter { |x| x == :thursday }.first
+    @days.filter { |x| x.name == :thursday }.first
   end
 
   def friday
-    @days.filter { |x| x == :friday }.first
+    @days.filter { |x| x.name == :friday }.first
   end
 
   def saturday
-    @days.filter { |x| x == :saturday }.first
+    @days.filter { |x| x.name == :saturday }.first
   end
 end
 
