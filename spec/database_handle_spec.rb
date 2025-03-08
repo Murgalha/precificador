@@ -41,6 +41,404 @@ RSpec.describe DatabaseHandle do
         expect(cost.name).to eq(expected_name)
         expect(cost.value).to eq(expected_value)
       end
+
+      it "should sort by case insensitive name" do
+        handle = DatabaseHandle.new(":memory:")
+        handle.add_cost("B2 cost", 1.0)
+        handle.add_cost("A cost", 1.0)
+        handle.add_cost("b1 cost", 1.0)
+
+        costs = handle.get_costs
+
+        expect(costs.size).to eq 3
+        expect(costs[0].name).to eq "A cost"
+        expect(costs[1].name).to eq "b1 cost"
+        expect(costs[2].name).to eq "B2 cost"
+      end
+    end
+  end
+
+  describe "#get_cost" do
+    it "returns nil when id is not existent" do
+      handle = DatabaseHandle.new(":memory:")
+      handle.add_cost("cost 1", 1.0)
+      handle.add_cost("cost 2", 1.5)
+
+      cost = handle.get_cost 4
+
+      expect(cost).to be_nil
+    end
+
+    it "returns correct data when id is correct" do
+      handle = DatabaseHandle.new(":memory:")
+      handle.add_cost("cost 1", 1.0)
+      handle.add_cost("cost 2", 1.5)
+
+      cost = handle.get_cost 2
+
+      expect(cost.name).to eq "cost 2"
+      expect(cost.value).to eq 1.5
+    end
+  end
+
+  describe "#update_cost" do
+    it "should save all updated data" do
+      handle = DatabaseHandle.new(":memory:")
+      handle.add_cost("cost 1", 1.0)
+
+      handle.update_cost({ :id => 1, :name => "new cost name", :value => 123 })
+
+      cost = handle.get_cost 1
+
+      expect(cost.name).to eq "new cost name"
+      expect(cost.value).to eq 123
+    end
+  end
+
+  describe "#get_salary_info" do
+    it "always returns data" do
+      handle = DatabaseHandle.new(":memory:")
+      salary_info = handle.get_salary_info
+
+      expect(salary_info.salary.value).to eq 0
+      expect(salary_info.work_week.sunday.work_time).to eq 0
+      expect(salary_info.work_week.sunday.name).to eq :sunday
+
+      expect(salary_info.work_week.monday.work_time).to eq 0
+      expect(salary_info.work_week.monday.name).to eq :monday
+
+      expect(salary_info.work_week.tuesday.work_time).to eq 0
+      expect(salary_info.work_week.tuesday.name).to eq :tuesday
+
+      expect(salary_info.work_week.wednesday.work_time).to eq 0
+      expect(salary_info.work_week.wednesday.name).to eq :wednesday
+
+      expect(salary_info.work_week.thursday.work_time).to eq 0
+      expect(salary_info.work_week.thursday.name).to eq :thursday
+
+      expect(salary_info.work_week.friday.work_time).to eq 0
+      expect(salary_info.work_week.friday.name).to eq :friday
+
+      expect(salary_info.work_week.saturday.work_time).to eq 0
+      expect(salary_info.work_week.saturday.name).to eq :saturday
+    end
+  end
+
+  describe "#update_salary_info" do
+    it "saves data correctly" do
+      handle = DatabaseHandle.new(":memory:")
+      week_hash = {
+        :sunday => 9,
+        :monday => 7,
+        :tuesday => 4,
+        :wednesday => 56,
+        :thursday => 100,
+        :friday => 235,
+        :saturday => 343,
+      }
+      salary = 1000
+
+      handle.update_salary_info(salary, week_hash)
+      salary_info = handle.get_salary_info
+
+      expect(salary_info.salary.value).to eq salary
+      expect(salary_info.work_week.sunday.work_time).to eq week_hash[:sunday]
+      expect(salary_info.work_week.monday.work_time).to eq week_hash[:monday]
+      expect(salary_info.work_week.tuesday.work_time).to eq week_hash[:tuesday]
+      expect(salary_info.work_week.wednesday.work_time).to eq week_hash[:wednesday]
+      expect(salary_info.work_week.thursday.work_time).to eq week_hash[:thursday]
+      expect(salary_info.work_week.friday.work_time).to eq week_hash[:friday]
+      expect(salary_info.work_week.saturday.work_time).to eq week_hash[:saturday]
+    end
+  end
+
+  describe "#get_materials" do
+    context "when no cost was added" do
+      it "returns empty list" do
+        handle = DatabaseHandle.new(":memory:")
+        materials = handle.get_materials
+
+        expect(materials).to be_empty
+      end
+    end
+
+    context "when material exists" do
+      it "returns data" do
+        handle = DatabaseHandle.new(":memory:")
+
+        exp_name = "test name"
+        exp_note = "this is a note"
+        exp_type = MaterialMeasureType.area.value
+        exp_price = 3.2
+        exp_bw = 7
+        exp_bl = 13
+        handle.add_material(exp_name, exp_note, exp_type, exp_price, exp_bw, exp_bl)
+
+        materials = handle.get_materials
+
+        expect(materials).not_to be_empty
+        expect(materials.size).to eq 1
+
+        material = materials[0]
+        expect(material.name).to eq(exp_name)
+        expect(material.note).to eq(exp_note)
+        expect(material.measure_type.value).to eq(exp_type)
+        expect(material.price).to eq(exp_price)
+        expect(material.base_width).to eq(exp_bw)
+        expect(material.base_length).to eq(exp_bl)
+      end
+
+      it "should sort by case insensitive name" do
+        handle = DatabaseHandle.new(":memory:")
+
+        note = "this is a note"
+        type = MaterialMeasureType.area.value
+        price = 3.2
+        bw = 7
+        bl = 13
+        handle.add_material("B2 material", note, type, price, bw, bl)
+        handle.add_material("A material", note, type, price, bw, bl)
+        handle.add_material("b1 material", note, type, price, bw, bl)
+
+        materials = handle.get_materials
+
+        expect(materials.size).to eq 3
+        expect(materials[0].name).to eq "A material"
+        expect(materials[1].name).to eq "b1 material"
+        expect(materials[2].name).to eq "B2 material"
+      end
+    end
+  end
+
+  describe "#get_material" do
+    it "returns nil when id is not existent" do
+      handle = DatabaseHandle.new(":memory:")
+      note = "this is a note"
+      type = MaterialMeasureType.area.value
+      price = 3.2
+      bw = 7
+      bl = 13
+      handle.add_material("material 1", note, type, price, bw, bl)
+      handle.add_material("material 2", note, type, price, bw, bl)
+
+      material = handle.get_material 4
+
+      expect(material).to be_nil
+    end
+
+    it "returns correct data when id is correct" do
+      handle = DatabaseHandle.new(":memory:")
+      note = "this is a note"
+      type = MaterialMeasureType.area.value
+      price = 3.2
+      bw = 7
+      bl = 13
+      handle.add_material("material 1", note, type, price, bw, bl)
+      handle.add_material("material 2", note, type, price, bw, bl)
+
+      material = handle.get_material 2
+
+      expect(material.name).to eq "material 2"
+      expect(material.note).to eq(note)
+      expect(material.measure_type.value).to eq(type)
+      expect(material.price).to eq(price)
+      expect(material.base_width).to eq(bw)
+      expect(material.base_length).to eq(bl)
+    end
+  end
+
+  describe "#add_material" do
+    it "saves it to the database" do
+      handle = DatabaseHandle.new(":memory:")
+      note = "this is a note"
+      type = MaterialMeasureType.area.value
+      price = 3.2
+      bw = 7
+      bl = 13
+
+      handle.add_material("material 1", note, type, price, bw, bl)
+      material = handle.get_material 1
+
+      expect(material.name).to eq "material 1"
+      expect(material.note).to eq(note)
+      expect(material.measure_type.value).to eq(type)
+      expect(material.price).to eq(price)
+      expect(material.base_width).to eq(bw)
+      expect(material.base_length).to eq(bl)
+    end
+  end
+
+  describe "#remove_material" do
+    it "removes the material from the database" do
+      handle = DatabaseHandle.new(":memory:")
+      note = "this is a note"
+      type = MaterialMeasureType.area.value
+      price = 3.2
+      bw = 7
+      bl = 13
+
+      handle.add_material("material 1", note, type, price, bw, bl)
+
+      handle.remove_material 1
+
+      material = handle.get_material 1
+      materials = handle.get_materials
+
+      expect(material).to be_nil
+      expect(materials.size).to eq 0
+    end
+  end
+
+  describe "#update_material" do
+    it "saves the new data in the database" do
+      handle = DatabaseHandle.new(":memory:")
+      note = "this is a note"
+      type = MaterialMeasureType.area.value
+      price = 3.2
+      bw = 7
+      bl = 13
+
+      handle.add_material("material 1", note, type, price, bw, bl)
+      new_data = {
+        :id => 1,
+        :name => "new name",
+        :note => "new note",
+        :price => 4.5,
+        :base_width => 1,
+        :base_length => 3
+      }
+
+      handle.update_material new_data
+      material = handle.get_material 1
+
+      expect(material.name).to eq "new name"
+      expect(material.note).to eq("new note")
+      expect(material.measure_type.value).to eq(type)
+      expect(material.price).to eq(4.5)
+      expect(material.base_width).to eq(1)
+      expect(material.base_length).to eq(3)
+    end
+  end
+
+  describe "#get_products_summary" do
+    context "when no product was added" do
+      it "returns empty list" do
+        handle = DatabaseHandle.new(":memory:")
+        products = handle.get_products_summary
+
+        expect(products).to be_empty
+      end
+    end
+
+    context "when product exists" do
+      it "returns data" do
+        handle = DatabaseHandle.new(":memory:")
+
+        handle.add_material("material 1", "", MaterialMeasureType.unit.value, 1.2, nil, nil)
+
+        product_data = {
+          :name => "test product",
+          :description => "test description",
+          :work_time => 60,
+          :profit => 50,
+          :materials => [["material 1", 5]]
+        }
+        handle.add_product(product_data)
+        product = handle.get_product 1
+
+        expect(product.id).to eq 1
+        expect(product.name).to eq "test product"
+        expect(product.description).to eq "test description"
+      end
+
+      it "should sort by case insensitive name" do
+        handle = DatabaseHandle.new(":memory:")
+        handle.add_material("material 1", "", MaterialMeasureType.unit.value, 1.2, nil, nil)
+
+        product_data = {
+          :description => "test description",
+          :work_time => 60,
+          :profit => 50,
+          :materials => [["material 1", 5]]
+        }
+
+        product_data[:name] = "B2 product"
+        handle.add_product(product_data)
+
+        product_data[:name] = "A product"
+        handle.add_product(product_data)
+
+        product_data[:name] = "b1 product"
+        handle.add_product(product_data)
+
+        products = handle.get_products_summary
+
+        expect(products.size).to eq 3
+        expect(products[0].name).to eq "A product"
+        expect(products[1].name).to eq "b1 product"
+        expect(products[2].name).to eq "B2 product"
+      end
+    end
+  end
+
+  describe "#get_product" do
+    it "returns nil when id is not existent" do
+      handle = DatabaseHandle.new(":memory:")
+      handle.add_material("material 1", "", MaterialMeasureType.unit.value, 1.2, nil, nil)
+
+      product_data = {
+        :name => "test product",
+        :description => "test description",
+        :work_time => 60,
+        :profit => 50,
+        :materials => [["material 1", 5]]
+      }
+
+      handle.add_product(product_data)
+      product = handle.get_product 3
+
+      expect(product).to be_nil
+    end
+
+    it "returns correct data when id is correct" do
+      handle = DatabaseHandle.new(":memory:")
+      handle.add_material("material 1", "", MaterialMeasureType.unit.value, 1.2, nil, nil)
+
+      product_data = {
+        :name => "test product",
+        :description => "test description",
+        :work_time => 60,
+        :profit => 50,
+        :materials => [["material 1", 5]]
+      }
+
+      handle.add_product(product_data)
+      product = handle.get_product 1
+
+      expect(product.id).to eq 1
+      expect(product.name).to eq "test product"
+      expect(product.description).to eq "test description"
+    end
+
+    it "sorts materials by id" do
+      handle = DatabaseHandle.new(":memory:")
+      handle.add_material("A material", "", MaterialMeasureType.unit.value, 1.2, nil, nil)
+      handle.add_material("B material", "", MaterialMeasureType.unit.value, 1.2, nil, nil)
+
+      product_data = {
+        :name => "test product",
+        :description => "test description",
+        :work_time => 60,
+        :profit => 50,
+        :materials => [["B material", 5], ["A material", 5]]
+      }
+
+      handle.add_product(product_data)
+      product = handle.get_product 1
+
+      expect(product.materials.size).to eq 2
+      expect(product.materials[0].name).to eq "B material"
+      expect(product.materials[1].name).to eq "A material"
     end
   end
 
