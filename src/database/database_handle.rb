@@ -214,7 +214,7 @@ class DatabaseHandle
               .join_table(:left, :material, pm_material_id_col => material_id_col)
               .select(*material_cols)
               .where(:product_id => product_id)
-              .order(:material_id)
+              .order(:product_material_id)
 
     product_materials = []
     query.each do |row|
