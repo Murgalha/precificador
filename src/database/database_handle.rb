@@ -189,7 +189,11 @@ class DatabaseHandle
   def get_product(product_id)
     product_result = @db[:product].select(:id, :name, :description, :minutes_needed, :profit)
         .where(:id => product_id)
-        .single_record!
+        .first
+
+    if product_result == nil
+      return nil
+    end
 
     material_cols = [
       Sequel.qualify(:material, :id).as(:material_id),
