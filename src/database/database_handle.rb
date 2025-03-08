@@ -28,7 +28,12 @@ class DatabaseHandle
   end
 
   def get_cost(cost_id)
-    record = @db[:monthly_cost].select(:id, :name, :value).where(:id => cost_id).single_record!
+    record = @db[:monthly_cost].select(:id, :name, :value).where(:id => cost_id).first
+
+    if record == nil
+      return nil
+    end
+
     return MonthlyCost.new(record[:id], record[:name], record[:value])
   end
 
@@ -119,7 +124,12 @@ class DatabaseHandle
       :base_length
     ]
 
-    record = @db[:material].select(*columns).where(:id => material_id).single_record!
+    record = @db[:material].select(*columns).where(:id => material_id).first
+
+    if record == nil
+      return nil
+    end
+
     id = record[:id]
     name = record[:name]
     note = record[:note]
@@ -179,7 +189,11 @@ class DatabaseHandle
   def get_product(product_id)
     product_result = @db[:product].select(:id, :name, :description, :minutes_needed, :profit)
         .where(:id => product_id)
-        .single_record!
+        .first
+
+    if product_result == nil
+      return nil
+    end
 
     material_cols = [
       Sequel.qualify(:material, :id).as(:material_id),
@@ -200,7 +214,7 @@ class DatabaseHandle
               .join_table(:left, :material, pm_material_id_col => material_id_col)
               .select(*material_cols)
               .where(:product_id => product_id)
-              .order(:material_id)
+              .order(:product_material_id)
 
     product_materials = []
     query.each do |row|
