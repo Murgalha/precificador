@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Templates
   def self.costs
     'costs.erb'
