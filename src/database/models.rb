@@ -193,7 +193,7 @@ class ProductMaterial
     @price = price
   end
 
-  def query_cost
+  def calculate_cost
     raise 'Method not implemented'
   end
 end
@@ -210,7 +210,7 @@ class AreaProductMaterial < ProductMaterial
     @length = l
   end
 
-  def query_cost
+  def calculate_cost
     area = @width * @length
     unit_cost = @price / (@base_length * @base_width)
 
@@ -226,7 +226,7 @@ class UnitProductMaterial < ProductMaterial
     @quantity = quantity
   end
 
-  def query_cost
+  def calculate_cost
     @price * @quantity
   end
 end
@@ -239,7 +239,7 @@ class LengthProductMaterial < ProductMaterial
     @quantity = quantity
   end
 
-  def query_cost
+  def calculate_cost
     @price * (@quantity / 100)
   end
 end
@@ -256,25 +256,25 @@ class Product
     @materials = materials
   end
 
-  def get_final_price(salary_info, monthly_costs)
-    material_cost = query_material_cost
-    labor_cost = get_labor_cost(salary_info, monthly_costs)
+  def calculate_final_price(salary_info, monthly_costs)
+    material_cost = calculate_material_cost
+    labor_cost = calculate_labor_cost(salary_info, monthly_costs)
 
-    labor_cost + material_cost + get_profit_wage(salary_info, monthly_costs)
+    labor_cost + material_cost + calculate_profit_wage(salary_info, monthly_costs)
   end
 
-  def query_material_cost
+  def calculate_material_cost
     material_sum = 0
     @materials.each do |m|
-      material_sum += m.get_cost
+      material_sum += m.calculate_cost
     end
     material_sum
   end
 
-  def get_labor_cost(salary_info, monthly_costs)
+  def calculate_labor_cost(salary_info, monthly_costs)
     wage = 0
     worked_minutes = 0
-    fixed_cost_sum = monthly_costs.inject(0){ |sum, x| sum + x.value }
+    fixed_cost_sum = monthly_costs.inject(0) { |sum, x| sum + x.value }
 
     salary_info.work_week.days.each do |day|
       worked_minutes += day.work_time
@@ -289,9 +289,9 @@ class Product
     wage
   end
 
-  def get_profit_wage(salary_info, monthly_costs)
-    material_cost = query_material_cost
-    labor_cost = get_labor_cost(salary_info, monthly_costs)
+  def calculate_profit_wage(salary_info, monthly_costs)
+    material_cost = calculate_material_cost
+    labor_cost = calculate_labor_cost(salary_info, monthly_costs)
 
     (material_cost + labor_cost) * (@profit / 100.0)
   end
