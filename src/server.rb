@@ -58,8 +58,8 @@ class Server < Roda
     # /custos
     r.on "custos" do
       r.is do
-        costs = @db_handle.get_costs()
-        salary_info = @db_handle.get_salary_info()
+        costs = @db_handle.query_costs()
+        salary_info = @db_handle.query_salary_info()
 
         context = {
           :costs => costs,
@@ -88,7 +88,7 @@ class Server < Roda
       r.on Integer do |cost_id|
         r.on "editar" do
           r.get do
-            cost = @db_handle.get_cost cost_id
+            cost = @db_handle.query_cost cost_id
             context = { :cost => cost }
 
             render_page(Templates.edit_cost, "Editar #{cost.name}", context)
@@ -120,7 +120,7 @@ class Server < Roda
     r.on "jornada" do
       r.on "editar" do
         r.get do
-          salary_info = @db_handle.get_salary_info()
+          salary_info = @db_handle.query_salary_info()
           context = {
             :salary => salary_info.salary,
             :days => salary_info.work_week.days,
@@ -149,7 +149,7 @@ class Server < Roda
     # /materiais
     r.on "materiais" do
       r.is do
-        materials = @db_handle.get_materials
+        materials = @db_handle.query_materials
 
         context = { :materials => materials }
 
@@ -223,7 +223,7 @@ class Server < Roda
     # /produtos
     r.on "produtos" do
       r.is do
-        products = @db_handle.get_products_summary
+        products = @db_handle.query_products_summary
         context = { :products => products }
 
         render_page(Templates.products, 'Produtos', context)
@@ -233,8 +233,8 @@ class Server < Roda
         product = @db_handle.get_product(product_id)
 
         r.is do
-          salary_info = @db_handle.get_salary_info
-          costs = @db_handle.get_costs
+          salary_info = @db_handle.query_salary_info
+          costs = @db_handle.query_costs
 
           context = {:product => product, :salary_info => salary_info, :monthly_costs => costs}
           render_page(Templates.product_details, product.name, context)
@@ -242,7 +242,7 @@ class Server < Roda
 
         r.on "editar" do
           r.get do
-            materials = @db_handle.get_materials
+            materials = @db_handle.query_materials
             context = {:product => product, :materials => materials}
             render_page(Templates.edit_product, "Editar #{product.name}", context)
           end
@@ -271,7 +271,7 @@ class Server < Roda
 
       r.on "adicionar" do
         r.get do
-          materials = @db_handle.get_materials
+          materials = @db_handle.query_materials
           context = { :materials => materials }
 
           render_page(Templates.add_product, 'Adicionar produto', context)
