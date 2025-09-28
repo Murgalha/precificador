@@ -61,7 +61,7 @@ class Server < Roda
         salary_info = @db_handle.query_salary_info
 
         context = {
-          cost: costs,
+          costs: costs,
           salary_info: salary_info
         }
 
