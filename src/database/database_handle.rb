@@ -114,7 +114,7 @@ class DatabaseHandle
     results
   end
 
-  def get_material(material_id)
+  def query_material(material_id)
     columns = %i[
       id
       name
@@ -185,7 +185,7 @@ class DatabaseHandle
     results
   end
 
-  def get_product(product_id)
+  def query_product(product_id)
     product_result = @db[:product]
                      .select(:id, :name, :description, :minutes_needed, :profit)
                      .where(id: product_id)

@@ -186,7 +186,7 @@ class Server < Roda
       r.on Integer do |material_id|
         r.on 'editar' do
           r.get do
-            material = @db_handle.get_material material_id
+            material = @db_handle.query_material material_id
             context = { material: material }
 
             render_page(Templates.edit_material, "Editar #{material.name}", context)
@@ -228,7 +228,7 @@ class Server < Roda
       end
 
       r.on Integer do |product_id|
-        product = @db_handle.get_product(product_id)
+        product = @db_handle.query_product(product_id)
 
         r.is do
           salary_info = @db_handle.query_salary_info

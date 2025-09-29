@@ -9,18 +9,18 @@ RSpec.describe DatabaseHandle do
       handle = DatabaseHandle.new(':memory:')
       handle.add_cost('test name', 1.0)
 
-      costs = handle.get_costs
+      costs = handle.query_costs
 
       expect(costs).not_to be_empty
       expect(costs.size).to eq(1)
     end
   end
 
-  describe '#get_costs' do
+  describe '#query_costs' do
     context 'when no cost was added' do
       it 'returns empty list' do
         handle = DatabaseHandle.new(':memory:')
-        costs = handle.get_costs
+        costs = handle.query_costs
 
         expect(costs).to be_empty
       end
@@ -34,7 +34,7 @@ RSpec.describe DatabaseHandle do
         expected_value = 1.2
         handle.add_cost(expected_name, expected_value)
 
-        costs = handle.get_costs
+        costs = handle.query_costs
 
         expect(costs).not_to be_empty
         expect(costs.size).to eq(1)
@@ -50,7 +50,7 @@ RSpec.describe DatabaseHandle do
         handle.add_cost('A cost', 1.0)
         handle.add_cost('b1 cost', 1.0)
 
-        costs = handle.get_costs
+        costs = handle.query_costs
 
         expect(costs.size).to eq 3
         expect(costs[0].name).to eq 'A cost'
@@ -60,13 +60,13 @@ RSpec.describe DatabaseHandle do
     end
   end
 
-  describe '#get_cost' do
+  describe '#query_cost' do
     it 'returns nil when id is not existent' do
       handle = DatabaseHandle.new(':memory:')
       handle.add_cost('cost 1', 1.0)
       handle.add_cost('cost 2', 1.5)
 
-      cost = handle.get_cost 4
+      cost = handle.query_cost 4
 
       expect(cost).to be_nil
     end
@@ -76,7 +76,7 @@ RSpec.describe DatabaseHandle do
       handle.add_cost('cost 1', 1.0)
       handle.add_cost('cost 2', 1.5)
 
-      cost = handle.get_cost 2
+      cost = handle.query_cost 2
 
       expect(cost.name).to eq 'cost 2'
       expect(cost.value).to eq 1.5
@@ -90,17 +90,17 @@ RSpec.describe DatabaseHandle do
 
       handle.update_cost({ id: 1, name: 'new cost name', value: 123 })
 
-      cost = handle.get_cost 1
+      cost = handle.query_cost 1
 
       expect(cost.name).to eq 'new cost name'
       expect(cost.value).to eq 123
     end
   end
 
-  describe '#get_salary_info' do
+  describe '#query_salary_info' do
     it 'always returns data' do
       handle = DatabaseHandle.new(':memory:')
-      salary_info = handle.get_salary_info
+      salary_info = handle.query_salary_info
 
       expect(salary_info.salary.value).to eq 0
       expect(salary_info.work_week.sunday.work_time).to eq 0
@@ -141,7 +141,7 @@ RSpec.describe DatabaseHandle do
       salary = 1000
 
       handle.update_salary_info(salary, week_hash)
-      salary_info = handle.get_salary_info
+      salary_info = handle.query_salary_info
 
       expect(salary_info.salary.value).to eq salary
       expect(salary_info.work_week.sunday.work_time).to eq week_hash[:sunday]
@@ -154,11 +154,11 @@ RSpec.describe DatabaseHandle do
     end
   end
 
-  describe '#get_materials' do
+  describe '#query_materials' do
     context 'when no cost was added' do
       it 'returns empty list' do
         handle = DatabaseHandle.new(':memory:')
-        materials = handle.get_materials
+        materials = handle.query_materials
 
         expect(materials).to be_empty
       end
@@ -176,7 +176,7 @@ RSpec.describe DatabaseHandle do
         exp_bl = 13
         handle.add_material(exp_name, exp_note, exp_type, exp_price, exp_bw, exp_bl)
 
-        materials = handle.get_materials
+        materials = handle.query_materials
 
         expect(materials).not_to be_empty
         expect(materials.size).to eq 1
@@ -202,7 +202,7 @@ RSpec.describe DatabaseHandle do
         handle.add_material('A material', note, type, price, bw, bl)
         handle.add_material('b1 material', note, type, price, bw, bl)
 
-        materials = handle.get_materials
+        materials = handle.query_materials
 
         expect(materials.size).to eq 3
         expect(materials[0].name).to eq 'A material'
@@ -212,7 +212,7 @@ RSpec.describe DatabaseHandle do
     end
   end
 
-  describe '#get_material' do
+  describe '#query_material' do
     it 'returns nil when id is not existent' do
       handle = DatabaseHandle.new(':memory:')
       note = 'this is a note'
@@ -223,7 +223,7 @@ RSpec.describe DatabaseHandle do
       handle.add_material('material 1', note, type, price, bw, bl)
       handle.add_material('material 2', note, type, price, bw, bl)
 
-      material = handle.get_material 4
+      material = handle.query_material 4
 
       expect(material).to be_nil
     end
@@ -238,7 +238,7 @@ RSpec.describe DatabaseHandle do
       handle.add_material('material 1', note, type, price, bw, bl)
       handle.add_material('material 2', note, type, price, bw, bl)
 
-      material = handle.get_material 2
+      material = handle.query_material 2
 
       expect(material.name).to eq 'material 2'
       expect(material.note).to eq(note)
@@ -259,7 +259,7 @@ RSpec.describe DatabaseHandle do
       bl = 13
 
       handle.add_material('material 1', note, type, price, bw, bl)
-      material = handle.get_material 1
+      material = handle.query_material 1
 
       expect(material.name).to eq 'material 1'
       expect(material.note).to eq(note)
@@ -283,8 +283,8 @@ RSpec.describe DatabaseHandle do
 
       handle.remove_material 1
 
-      material = handle.get_material 1
-      materials = handle.get_materials
+      material = handle.query_material 1
+      materials = handle.query_materials
 
       expect(material).to be_nil
       expect(materials.size).to eq 0
@@ -311,7 +311,7 @@ RSpec.describe DatabaseHandle do
       }
 
       handle.update_material new_data
-      material = handle.get_material 1
+      material = handle.query_material 1
 
       expect(material.name).to eq 'new name'
       expect(material.note).to eq('new note')
@@ -322,11 +322,11 @@ RSpec.describe DatabaseHandle do
     end
   end
 
-  describe '#get_products_summary' do
+  describe '#query_products_summary' do
     context 'when no product was added' do
       it 'returns empty list' do
         handle = DatabaseHandle.new(':memory:')
-        products = handle.get_products_summary
+        products = handle.query_products_summary
 
         expect(products).to be_empty
       end
@@ -346,7 +346,7 @@ RSpec.describe DatabaseHandle do
           materials: [['material 1', 5]]
         }
         handle.add_product(product_data)
-        product = handle.get_product 1
+        product = handle.query_product 1
 
         expect(product.id).to eq 1
         expect(product.name).to eq 'test product'
@@ -373,7 +373,7 @@ RSpec.describe DatabaseHandle do
         product_data[:name] = 'b1 product'
         handle.add_product(product_data)
 
-        products = handle.get_products_summary
+        products = handle.query_products_summary
 
         expect(products.size).to eq 3
         expect(products[0].name).to eq 'A product'
@@ -383,7 +383,7 @@ RSpec.describe DatabaseHandle do
     end
   end
 
-  describe '#get_product' do
+  describe '#query_product' do
     it 'returns nil when id is not existent' do
       handle = DatabaseHandle.new(':memory:')
       handle.add_material('material 1', '', MaterialMeasureType.unit.value, 1.2, nil, nil)
@@ -397,7 +397,7 @@ RSpec.describe DatabaseHandle do
       }
 
       handle.add_product(product_data)
-      product = handle.get_product 3
+      product = handle.query_product 3
 
       expect(product).to be_nil
     end
@@ -415,7 +415,7 @@ RSpec.describe DatabaseHandle do
       }
 
       handle.add_product(product_data)
-      product = handle.get_product 1
+      product = handle.query_product 1
 
       expect(product.id).to eq 1
       expect(product.name).to eq 'test product'
@@ -436,7 +436,7 @@ RSpec.describe DatabaseHandle do
       }
 
       handle.add_product(product_data)
-      product = handle.get_product 1
+      product = handle.query_product 1
 
       expect(product.materials.size).to eq 2
       expect(product.materials[0].name).to eq 'B material'
@@ -458,7 +458,7 @@ RSpec.describe DatabaseHandle do
         materials: [['material 1', 5]]
       }
       handle.add_product(product_data)
-      product = handle.get_product 1
+      product = handle.query_product 1
 
       expect(product.name).to eq 'test product'
       expect(product.description).to eq 'test description'
@@ -498,7 +498,7 @@ RSpec.describe DatabaseHandle do
       }
       handle.edit_product(1, new_data)
 
-      product = handle.get_product 1
+      product = handle.query_product 1
 
       expect(product.name).to eq('new test product name')
       expect(product.description).to eq('fancy description')
