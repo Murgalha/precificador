@@ -35,7 +35,7 @@
           </td>
         <% end %>
         <td>
-          R$<%= money_format material.get_cost %>
+          R$<%= money_format material.calculate_cost %>
         </td>
         <tr>
     <% end %>
@@ -43,7 +43,7 @@
   <tfoot>
     <tr class="table-active">
       <td colspan="2"><strong>Subtotal</strong></td>
-      <td><strong>R$<%= money_format product.get_material_cost %></strong></td>
+      <td><strong>R$<%= money_format product.calculate_material_cost %></strong></td>
     </tr>
   </tfoot>
 </table>
@@ -54,14 +54,14 @@
     <tr>
       <td>Mão de obra</td>
       <td></td>
-      <td><strong>R$<%= money_format product.get_labor_cost(salary_info, monthly_costs) %></strong></td>
+      <td><strong>R$<%= money_format product.calculate_labor_cost(salary_info, monthly_costs) %></strong></td>
     </tr>
     <tr>
       <td>Lucro</td>
       <td></td>
-      <td><strong>R$<%= money_format product.get_profit_wage(salary_info, monthly_costs) %></strong></td>
+      <td><strong>R$<%= money_format product.calculate_profit_wage(salary_info, monthly_costs) %></strong></td>
     </tr>
   </tbody>
 </table>
 
-<h4><strong>Total: R$<%= money_format product.get_final_price(salary_info, monthly_costs) %></strong></h4>
+<h4><strong>Total: R$<%= money_format product.calculate_final_price(salary_info, monthly_costs) %></strong></h4>

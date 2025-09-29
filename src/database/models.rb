@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class MonthlyCost
   attr_accessor :id, :name, :value
 
@@ -63,44 +65,44 @@ end
 
 class WorkDay
   attr_reader :name, :work_time
+
   private_class_method :new
 
-  def self.sunday(wk)
-    return self.new(:sunday, wk)
+  def self.sunday(work_time)
+    new(:sunday, work_time)
   end
 
-  def self.monday(wk)
-    return self.new(:monday, wk)
+  def self.monday(work_time)
+    new(:monday, work_time)
   end
 
-  def self.tuesday(wk)
-    return self.new(:tuesday, wk)
+  def self.tuesday(work_time)
+    new(:tuesday, work_time)
   end
 
-  def self.wednesday(wk)
-    return self.new(:wednesday, wk)
+  def self.wednesday(work_time)
+    new(:wednesday, work_time)
   end
 
-  def self.thursday(wk)
-    return self.new(:thursday, wk)
+  def self.thursday(work_time)
+    new(:thursday, work_time)
   end
 
-  def self.friday(wk)
-    return self.new(:friday, wk)
+  def self.friday(work_time)
+    new(:friday, work_time)
   end
 
-  def self.saturday(wk)
-    return self.new(:saturday, wk)
+  def self.saturday(work_time)
+    new(:saturday, work_time)
   end
 
   def ==(other)
-    return other.name == @name
+    other.name == @name
   end
 
   def eql?(other)
-    return other.name.eql? @name
+    other.name.eql? @name
   end
-
 
   def initialize(name, work_time)
     @name = name
@@ -111,11 +113,11 @@ end
 class Material
   attr_reader :id, :name, :note, :measure_type, :price, :base_width, :base_length
 
-  def initialize(id, name, note, mt, price, base_w, base_l)
+  def initialize(id, name, note, measure_type, price, base_w, base_l)
     @id = id
     @name = name
     @note = note
-    @measure_type = mt
+    @measure_type = measure_type
     @price = price
     @base_width = base_w
     @base_length = base_l
@@ -124,43 +126,45 @@ end
 
 class MaterialMeasureType
   attr_reader :name, :value
+
   private_class_method :new
 
-  def self.from_value(v)
-    if v == 0
-      return self.unit
-    elsif v == 1
-      return self.length
-    elsif v == 2
-      return self.area
-    elsif v == 3
-      return self.weight
+  def self.from_value(val)
+    case val
+    when 0
+      unit
+    when 1
+      length
+    when 2
+      area
+    when 3
+      weight
     else
-      raise "Unknown value of measure type: #{v}"
+      raise "Unknown value of measure type: #{val}"
     end
   end
 
   def self.unit
-    self.new('unit', 0)
+    new('unit', 0)
   end
 
   def self.length
-    self.new('length', 1)
+    new('length', 1)
   end
 
   def self.area
-    self.new('area', 2)
+    new('area', 2)
   end
 
   def self.weight
-    self.new('weight', 3)
+    new('weight', 3)
   end
 
   def ==(other)
     if other.is_a? MaterialMeasureType
-      return other.value == @value
+      other.value == @value
     else
-      return other == @value
+      other == @value
     end
   end
 
@@ -189,26 +193,28 @@ class ProductMaterial
     @price = price
   end
 
-  def get_cost; raise "Method not implemented"; end
+  def calculate_cost
+    raise 'Method not implemented'
+  end
 end
 
 class AreaProductMaterial < ProductMaterial
   attr_reader :width, :length, :base_width, :base_length
 
-  def initialize(id, name, price, bw, bl, w, l)
+  def initialize(id, name, price, b_width, b_length, w, l)
     super(id, name, price)
 
-    @base_width = bw
-    @base_length = bl
+    @base_width = b_width
+    @base_length = b_length
     @width = w
     @length = l
   end
 
-  def get_cost
+  def calculate_cost
     area = @width * @length
     unit_cost = @price / (@base_length * @base_width)
 
-    return area * unit_cost
+    area * unit_cost
   end
 end
 
@@ -220,8 +226,8 @@ class UnitProductMaterial < ProductMaterial
     @quantity = quantity
   end
 
-  def get_cost
-    return @price * @quantity
+  def calculate_cost
+    @price * @quantity
   end
 end
 
@@ -233,8 +239,8 @@ class LengthProductMaterial < ProductMaterial
     @quantity = quantity
   end
 
-  def get_cost
-    return @price * (@quantity / 100)
+  def calculate_cost
+    @price * (@quantity / 100)
   end
 end
 
@@ -250,27 +256,27 @@ class Product
     @materials = materials
   end
 
-  def get_final_price(salary_info, monthly_costs)
-    material_cost = get_material_cost()
-    labor_cost = get_labor_cost(salary_info, monthly_costs)
+  def calculate_final_price(salary_info, monthly_costs)
+    material_cost = calculate_material_cost
+    labor_cost = calculate_labor_cost(salary_info, monthly_costs)
 
-    return labor_cost + material_cost + get_profit_wage(salary_info, monthly_costs)
+    labor_cost + material_cost + calculate_profit_wage(salary_info, monthly_costs)
   end
 
-  def get_material_cost
+  def calculate_material_cost
     material_sum = 0
-    for m in @materials
-      material_sum += m.get_cost
+    @materials.each do |m|
+      material_sum += m.calculate_cost
     end
-    return material_sum
+    material_sum
   end
 
-  def get_labor_cost(salary_info, monthly_costs)
+  def calculate_labor_cost(salary_info, monthly_costs)
     wage = 0
     worked_minutes = 0
-    fixed_cost_sum = monthly_costs.inject(0){ |sum, x| sum + x.value }
+    fixed_cost_sum = monthly_costs.inject(0) { |sum, x| sum + x.value }
 
-    for day in salary_info.work_week.days
+    salary_info.work_week.days.each do |day|
       worked_minutes += day.work_time
     end
     worked_minutes *= 4
@@ -280,13 +286,13 @@ class Product
       wage = wage_per_minute * @minutes_needed
     end
 
-    return wage
+    wage
   end
 
-  def get_profit_wage(salary_info, monthly_costs)
-    material_cost = get_material_cost
-    labor_cost = get_labor_cost(salary_info, monthly_costs)
+  def calculate_profit_wage(salary_info, monthly_costs)
+    material_cost = calculate_material_cost
+    labor_cost = calculate_labor_cost(salary_info, monthly_costs)
 
-    return (material_cost + labor_cost) * (@profit / 100.0)
+    (material_cost + labor_cost) * (@profit / 100.0)
   end
 end
