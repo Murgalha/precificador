@@ -9,8 +9,38 @@
       <div class="card-body">
         <h5 class="card-title"><%= product.name %></h5>
         <p class="card-text"><%= product.description %></p>
+        <button type="button"
+                onclick="confirmRemoval(<%= product.id %>)"
+                class="btn btn-outline-danger btn-sm"
+                data-bs-toggle="modal"
+                data-bs-target="#staticBackdrop">
+          <i class="bi bi-trash"></i>
+        </button>
         <a href="/produtos/<%= product.id %>" class="card-link">Ver detalhes</a>
       </div>
+
     </div>
   </div>
 <% end %>
+
+<script>
+ let all_products = [
+   <% products.each do |product| %>
+   { name: "<%= product.name %>",
+     id: <%= product.id %>,
+   },
+   <% end %>
+ ]
+
+ function confirmRemoval(id) {
+   let product = all_products.find((x) => x.id === id);
+
+   let title = `Remover ${product.name}?`;
+   let description = `Esta ação não poderá ser desfeita.`;
+   openModal(title, description, async () => { await removeMaterial(product) });
+ }
+
+ async function removeMaterial(product) {
+   await fetch(`/produtos/${product.id}/remover`, { method: "POST" });
+ }
+</script>

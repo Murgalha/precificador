@@ -514,4 +514,25 @@ RSpec.describe DatabaseHandle do
       expect(material.length).to eq(9)
     end
   end
+
+  describe '#remove_product' do
+    it 'remove product and material data' do
+      handle = DatabaseHandle.new(':memory:')
+
+      handle.add_material('material 1', '', MaterialMeasureType.unit.value, 1.2, nil, nil)
+      handle.add_material('material 2', '', MaterialMeasureType.area.value, 1.0, 100, 120)
+      product_data = {
+        name: 'test product',
+        description: '',
+        work_time: 60,
+        profit: 50,
+        materials: [['material 1', '5']]
+      }
+      handle.add_product(product_data)
+      handle.remove_product(1)
+
+      products = handle.query_products_summary
+      expect(products.length).to eq(0)
+    end
+  end
 end

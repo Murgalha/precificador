@@ -334,4 +334,20 @@ class DatabaseHandle
       end
     end
   end
+
+  def remove_product(product_id)
+    product_materials = @db[:product_materials]
+                        .where(product_id: product_id)
+                        .select(:id).all
+
+    pm_ids = product_materials.map { |x| x[:id] }
+    prod_mat_q = @db[:product_material_quantities]
+                 .where(product_material_id: pm_ids)
+                 .select(:id).all
+    pmq_ids = prod_mat_q.map { |x| x[:id] }
+
+    @db[:product_material_quantities].where(id: pmq_ids).delete
+    @db[:product_materials].where(id: pm_ids).delete
+    @db[:product].where(id: product_id).delete
+  end
 end

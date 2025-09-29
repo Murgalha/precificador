@@ -263,6 +263,13 @@ class Server < Roda
             r.redirect "/produtos/#{product_id}"
           end
         end
+
+        r.on 'remover' do
+          r.post do
+            @db_handle.remove_product product_id
+            'Produto removido com sucesso'
+          end
+        end
       end
 
       r.on 'adicionar' do
