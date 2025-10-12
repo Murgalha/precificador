@@ -9,14 +9,14 @@
       <div class="card-body">
         <h5 class="card-title"><%= product.name %></h5>
         <p class="card-text"><%= product.description %></p>
+        <a href="/produtos/<%= product.id %>" class="card-link">Ver detalhes</a>
         <button type="button"
                 onclick="confirmRemoval(<%= product.id %>)"
-                class="btn btn-outline-danger btn-sm"
+                class="btn btn-danger btn-sm mr-4"
                 data-bs-toggle="modal"
                 data-bs-target="#staticBackdrop">
-          <i class="bi bi-trash"></i>
+          Remover
         </button>
-        <a href="/produtos/<%= product.id %>" class="card-link">Ver detalhes</a>
       </div>
 
     </div>
