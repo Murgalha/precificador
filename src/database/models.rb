@@ -175,12 +175,13 @@ class MaterialMeasureType
 end
 
 class ProductSummary
-  attr_reader :id, :name, :description
+  attr_reader :id, :name, :description, :total_price
 
-  def initialize(id, name, description)
+  def initialize(id, name, description, total_price)
     @id = id
     @name = name
     @description = description
+    @total_price = total_price
   end
 end
 

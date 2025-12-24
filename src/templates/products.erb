@@ -6,19 +6,24 @@
 <% for product in products %>
   <div class="mb-3">
     <div class="card">
-      <div class="card-body">
-        <h5 class="card-title"><%= product.name %></h5>
-        <p class="card-text"><%= product.description %></p>
-        <a href="/produtos/<%= product.id %>" class="card-link">Ver detalhes</a>
-        <button type="button"
-                onclick="confirmRemoval(<%= product.id %>)"
-                class="btn btn-danger btn-sm mr-4"
-                data-bs-toggle="modal"
-                data-bs-target="#staticBackdrop">
-          Remover
-        </button>
+      <div class="card-body row">
+        <div class="col">
+          <h5 class="card-title"><%= product.name %></h5>
+          <p class="card-text"><%= product.description %></p>
+          <a href="/produtos/<%= product.id %>" class="card-link">Ver detalhes</a>
+          <button type="button"
+                  onclick="confirmRemoval(<%= product.id %>)"
+                  class="btn btn-danger btn-sm mr-4"
+                  data-bs-toggle="modal"
+                  data-bs-target="#staticBackdrop">
+            Remover
+          </button>
+        </div>
+        <div class="col text-end fs-3 align-baseline" style="margin: auto;">
+          <big>R$<%= money_format product.total_price %></big>
+        </div>
+        </div>
       </div>
-
     </div>
   </div>
 <% end %>
