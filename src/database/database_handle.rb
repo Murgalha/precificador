@@ -174,12 +174,14 @@ class DatabaseHandle
 
   def query_products_summary
     results = []
-    @db[:product].select(:id, :name, :description).order(Sequel.lit('LOWER(name)')).all do |row|
-      id = row[:id]
-      name = row[:name]
-      description = row[:description]
+    salary_info = query_salary_info
+    monthly_costs = query_costs
 
-      results.append(ProductSummary.new(id, name, description))
+    ids = @db[:product].select(:id).order(Sequel.lit('LOWER(name)')).all
+    ids.each do |id|
+      p = query_product id[:id]
+      price = p.calculate_final_price salary_info, monthly_costs
+      results.append(ProductSummary.new(p.id, p.name, p.description, price))
     end
 
     results
@@ -193,44 +195,8 @@ class DatabaseHandle
 
     return nil if product_result.nil?
 
-    material_cols = [
-      Sequel.qualify(:material, :id).as(:material_id),
-      Sequel.qualify(:material, :name),
-      Sequel.qualify(:material, :price),
-      Sequel.qualify(:material, :measure_type),
-      Sequel.qualify(:material, :base_width),
-      Sequel.qualify(:material, :base_length),
-      Sequel.qualify(:product_materials, :id).as(:product_material_id)
-    ]
-    product_id_col = Sequel.qualify(:product, :id)
-    pm_product_id_col = Sequel.qualify(:product_materials, :product_id)
-    pm_material_id_col = Sequel.qualify(:product_materials, :material_id)
-    material_id_col = Sequel.qualify(:material, :id)
-
-    query = @db[:product]
-            .join_table(:left, :product_materials, product_id_col => pm_product_id_col)
-            .join_table(:left, :material, pm_material_id_col => material_id_col)
-            .select(*material_cols)
-            .where(product_id: product_id)
-            .order(:product_material_id)
-
-    product_materials = []
-    query.each do |row|
-      pm_id = row[:product_material_id]
-      quantities = @db[:product_material_quantities].select(:quantity).where(product_material_id: pm_id).all
-
-      if row[:measure_type] == MaterialMeasureType.area.value
-        product_materials.append(
-          AreaProductMaterial.new(pm_id, row[:name], row[:price], row[:base_length],
-                                  row[:base_width], quantities[0][:quantity], quantities[1][:quantity])
-        )
-      elsif row[:measure_type] == MaterialMeasureType.length.value
-        product_materials.append(LengthProductMaterial.new(pm_id, row[:name], row[:price], quantities[0][:quantity]))
-      else
-        product_materials.append(UnitProductMaterial.new(pm_id, row[:name], row[:price], quantities[0][:quantity]))
-      end
-    end
-
+    product_materials = query_product_materials product_id
+    
     Product.new(product_result[:id], product_result[:name], product_result[:description],
                 product_result[:minutes_needed], product_result[:profit], product_materials)
   end
@@ -349,5 +315,48 @@ class DatabaseHandle
     @db[:product_material_quantities].where(id: pmq_ids).delete
     @db[:product_materials].where(id: pm_ids).delete
     @db[:product].where(id: product_id).delete
+  end
+
+  private
+  def query_product_materials(product_id)
+    material_cols = [
+      Sequel.qualify(:material, :id).as(:material_id),
+      Sequel.qualify(:material, :name),
+      Sequel.qualify(:material, :price),
+      Sequel.qualify(:material, :measure_type),
+      Sequel.qualify(:material, :base_width),
+      Sequel.qualify(:material, :base_length),
+      Sequel.qualify(:product_materials, :id).as(:product_material_id)
+    ]
+    product_id_col = Sequel.qualify(:product, :id)
+    pm_product_id_col = Sequel.qualify(:product_materials, :product_id)
+    pm_material_id_col = Sequel.qualify(:product_materials, :material_id)
+    material_id_col = Sequel.qualify(:material, :id)
+
+    query = @db[:product]
+            .join_table(:left, :product_materials, product_id_col => pm_product_id_col)
+            .join_table(:left, :material, pm_material_id_col => material_id_col)
+            .select(*material_cols)
+            .where(product_id: product_id)
+            .order(:product_material_id)
+
+    product_materials = []
+    query.each do |row|
+      pm_id = row[:product_material_id]
+      quantities = @db[:product_material_quantities].select(:quantity).where(product_material_id: pm_id).all
+
+      if row[:measure_type] == MaterialMeasureType.area.value
+        product_materials.append(
+          AreaProductMaterial.new(pm_id, row[:name], row[:price], row[:base_length],
+                                  row[:base_width], quantities[0][:quantity], quantities[1][:quantity])
+        )
+      elsif row[:measure_type] == MaterialMeasureType.length.value
+        product_materials.append(LengthProductMaterial.new(pm_id, row[:name], row[:price], quantities[0][:quantity]))
+      else
+        product_materials.append(UnitProductMaterial.new(pm_id, row[:name], row[:price], quantities[0][:quantity]))
+      end
+    end
+
+    return product_materials
   end
 end
