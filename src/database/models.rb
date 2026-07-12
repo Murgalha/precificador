@@ -8,6 +8,18 @@ class MonthlyCost
     @name = name
     @value = value
   end
+
+  def to_h
+    {
+      id: @id,
+      name: @name,
+      value: @value
+    }
+  end
+
+  def to_json(*args)
+    to_h.to_json(*args)
+  end
 end
 
 class Salary
@@ -129,6 +141,17 @@ class WorkDay
     @name = name
     @work_time = work_time
   end
+
+  def to_h
+    {
+      name: @name,
+      work_time: @work_time
+    }
+  end
+
+  def to_json(*args)
+    to_h.to_json(*args)
+  end
 end
 
 class Material
@@ -166,19 +189,19 @@ class MaterialMeasureType
   end
 
   def self.unit
-    new('unit', 0)
+    new("unit", 0)
   end
 
   def self.length
-    new('length', 1)
+    new("length", 1)
   end
 
   def self.area
-    new('area', 2)
+    new("area", 2)
   end
 
   def self.weight
-    new('weight', 3)
+    new("weight", 3)
   end
 
   def ==(other)
@@ -204,6 +227,18 @@ class ProductSummary
     @description = description
     @total_price = total_price
   end
+
+  def to_h
+    {
+      id: @id,
+      name: @name,
+      description: @description
+    }
+  end
+
+  def to_json(*args)
+    to_h.to_json(*args)
+  end
 end
 
 class ProductMaterial
@@ -216,7 +251,7 @@ class ProductMaterial
   end
 
   def calculate_cost
-    raise 'Method not implemented'
+    raise "Method not implemented"
   end
 end
 
