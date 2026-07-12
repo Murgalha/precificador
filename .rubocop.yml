@@ -1,3 +1,6 @@
+Lint/UselessAssignment:
+  AutoCorrect: false
+
 Metrics/ClassLength:
   Enabled: false
 
@@ -12,6 +15,9 @@ Metrics/ParameterLists:
 
 Metrics/AbcSize:
   Enabled: false
+
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
 
 Style/GuardClause:
   Enabled: false
