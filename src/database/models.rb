@@ -25,6 +25,27 @@ class SalaryInfo
     @salary = salary
     @work_week = work_week
   end
+
+  def cost_per_hour(monthly_costs)
+    fixed_cost_sum = monthly_costs.inject(0) { |sum, x| sum + x.value }
+    worked_minutes = @work_week.days.inject(0) { |sum, x| sum + x.work_time } * 4
+
+    wage_per_minute = 0
+    wage_per_minute = (@salary.value.to_f + fixed_cost_sum) / worked_minutes.to_f if worked_minutes != 0
+
+    wage_per_minute * 60
+  end
+
+  def to_h
+    {
+      salary: @salary.value,
+      work_week: @work_week.days.map(&:to_h)
+    }
+  end
+
+  def to_json(*args)
+    to_h.to_json(*args)
+  end
 end
 
 class WorkWeek
