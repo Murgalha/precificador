@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require 'sequel'
-require_relative 'models'
+require "sequel"
+require_relative "models"
 
 Sequel.extension :migration
 
@@ -22,7 +22,7 @@ class DatabaseHandle
 
   def query_costs
     results = []
-    @db[:monthly_cost].select(:id, :name, :value).order(Sequel.lit('LOWER(name)')).all do |row|
+    @db[:monthly_cost].select(:id, :name, :value).order(Sequel.lit("LOWER(name)")).all do |row|
       results.append(MonthlyCost.new(row[:id], row[:name], row[:value]))
     end
 
@@ -99,7 +99,7 @@ class DatabaseHandle
       base_length
     ]
     results = []
-    @db[:material].select(*columns).order(Sequel.lit('LOWER(name)')).all do |row|
+    @db[:material].select(*columns).order(Sequel.lit("LOWER(name)")).all do |row|
       id = row[:id]
       name = row[:name]
       note = row[:note]
@@ -177,7 +177,7 @@ class DatabaseHandle
     salary_info = query_salary_info
     monthly_costs = query_costs
 
-    ids = @db[:product].select(:id).order(Sequel.lit('LOWER(name)')).all
+    ids = @db[:product].select(:id).order(Sequel.lit("LOWER(name)")).all
     ids.each do |id|
       p = query_product id[:id]
       price = p.calculate_final_price salary_info, monthly_costs
@@ -196,7 +196,7 @@ class DatabaseHandle
     return nil if product_result.nil?
 
     product_materials = query_product_materials product_id
-    
+
     Product.new(product_result[:id], product_result[:name], product_result[:description],
                 product_result[:minutes_needed], product_result[:profit], product_materials)
   end
@@ -222,7 +222,7 @@ class DatabaseHandle
 
       quantities = []
       if material_type == MaterialMeasureType.area.value
-        split = quantity.split('x')
+        split = quantity.split("x")
         quantities.append(split[0])
         quantities.append(split[1])
       else
@@ -278,7 +278,7 @@ class DatabaseHandle
 
       quantities = []
       if material_type == MaterialMeasureType.area.value
-        split = quantity.split('x')
+        split = quantity.split("x")
         quantities.append(split[0])
         quantities.append(split[1])
       else
@@ -318,6 +318,7 @@ class DatabaseHandle
   end
 
   private
+
   def query_product_materials(product_id)
     material_cols = [
       Sequel.qualify(:material, :id).as(:material_id),
@@ -357,6 +358,6 @@ class DatabaseHandle
       end
     end
 
-    return product_materials
+    product_materials
   end
 end

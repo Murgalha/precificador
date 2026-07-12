@@ -53,12 +53,12 @@
   <tbody>
     <tr>
       <td>Mão de obra</td>
-      <td></td>
+      <td><%= product.minutes_needed %> min.</td>
       <td><strong>R$<%= money_format product.calculate_labor_cost(salary_info, monthly_costs) %></strong></td>
     </tr>
     <tr>
       <td>Lucro</td>
-      <td></td>
+      <td><%= product.profit %>%</td>
       <td><strong>R$<%= money_format product.calculate_profit_wage(salary_info, monthly_costs) %></strong></td>
     </tr>
   </tbody>
